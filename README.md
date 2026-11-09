@@ -1,0 +1,163 @@
+# Antigravity — VP Info Solutions Pvt Ltd
+### Corporate Lead Generation & Sales Tracking Web Application
+*Tailored for **VP Info Solutions Pvt Ltd**, a Premier Tally Certified Partner*
+
+---
+
+## 🌟 Overview
+**Antigravity** is a full-stack, enterprise-grade lead generation, tracking, and sales governance web application. Designed specifically for **VP Info Solutions Pvt Ltd**, it empowers the organization to capture, track, reassign, and analyze prospective Tally software sales—including **TallyPrime**, **Tally.ERP 9 Upgrades**, **Tally Customization (TDL)**, **AMC**, **Tally on Cloud**, and **Tally Server 9**.
+
+The application features a strict 3-tier Role-Based Access Control (RBAC) system:
+1. **Sales Person / Sales Consultant** (Individual Pipeline Tracking, Lead Capture & Status Updates)
+2. **RM / Relationship Manager** (Team Pipeline Oversight, Lead Generation & Leaderboard)
+3. **Admin** (Master Company Pipeline, Global KPIs, User Governance & Power BI Integration)
+
+---
+
+## 🏛️ Architecture & Tech Stack
+
+```
+                     ┌──────────────────────────────────────────────┐
+                     │          Streamlit Frontend (Port 8501)      │
+                     │  - VP Info Corporate Navy & Gold Theme      │
+                     │  - Interactive Plotly Analytics & KPI Cards │
+                     │  - Dynamic Role Dashboards (Admin/RM/Sales)  │
+                     └──────────────────────┬───────────────────────┘
+                                            │ HTTP / REST (JWT Auth)
+                                            ▼
+                     ┌──────────────────────────────────────────────┐
+                     │            FastAPI Backend (Port 8000)       │
+                     │  - Token-Based JWT Authentication            │
+                     │  - Role Scoping & Reassignment Validation    │
+                     │  - Power BI Export Engine (JSON / CSV)       │
+                     └──────────────────────┬───────────────────────┘
+                                            │ SQLAlchemy ORM
+                                            ▼
+                     ┌──────────────────────────────────────────────┐
+                     │       MySQL 8.0+ / SQLite Database           │
+                     │  - users (Self-referencing RM mapping)       │
+                     │  - leads (Linked to Sales Reps)              │
+                     │  - lead_activity_logs (Audit Trail)          │
+                     │  - Power BI Reporting Views                  │
+                     └──────────────────────────────────────────────┘
+```
+
+- **Frontend:** Python 3, Streamlit, Plotly, Pandas
+- **Backend API:** FastAPI, Uvicorn, Pydantic, Python-Jose (JWT), Cryptography
+- **Database:** MySQL 8.0+ (Production DDL in `database/schema.sql`) and SQLite (Instant local demo mode)
+- **Business Intelligence:** Native Microsoft Power BI Web Connector endpoints & Star-Schema SQL views
+
+---
+
+## 🚀 Quick Start (Running the Application)
+
+### 1. Launch Both Backend & Frontend in 1 Command
+Run the unified launcher:
+```bash
+python run.py
+```
+- **Streamlit Frontend:** [http://localhost:8501](http://localhost:8501)
+- **FastAPI Backend Swagger Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Power BI Live Data Feed:** [http://localhost:8000/api/export/powerbi?format=json](http://localhost:8000/api/export/powerbi?format=json)
+
+*(Alternatively, run backend only: `python run.py --backend-only` or frontend only: `python run.py --frontend-only`)*
+
+---
+
+## 🔑 Pre-Seeded Corporate Demo Accounts
+
+The application automatically seeds realistic corporate accounts and Tally leads on first startup:
+
+| Role | Username | Password | Full Name | Notes / Hierarchy |
+| :--- | :--- | :--- | :--- | :--- |
+| **Admin** | `admin` | `admin123` | **Rajesh Sharma** | Chief Operating Officer (Master company access) |
+| **RM (Relationship Manager)** | *Dynamic* | *Custom* | *User Created* | Registered via Admin Console (Team Leads Oversight) |
+| **Sales Consultant** | *Dynamic* | *Custom* | *User Created* | Registered via Admin Console (Mapped to RM) |
+
+> **Tip:** The login screen includes **Quick Demo 1-Click Buttons** allowing you to instantly sign in as Admin, RM, or Sales Person without typing.
+
+---
+
+## 📋 Role-Based Feature Matrix
+
+### 1. Sales Person Dashboard (Individual Tracking)
+- **Personal KPIs:** Real-time metrics for *My Total Leads*, *My Open Deals*, *My Closed Won*, *My Win Rate (%)*, and *My Pipeline Value (INR)*.
+- **Lead Capture Form:** Log prospective clients with:
+  - Lead Name, Business / Company Name, Phone, Email
+  - Industry selection (Manufacturing, Retail, Textiles, Pharma, Logistics, etc.)
+  - Interested Product (TallyPrime, Tally.ERP 9 Upgrade, Tally Customization, AMC, Tally on Cloud, Tally Server 9, Integration)
+  - Estimated Deal Value & Requirements Notes
+- **My Pipeline Table:** Displays strictly the leads generated by or assigned to the logged-in rep.
+- **Status Updates:** Quick stage dropdown (*New*, *Contacted*, *Demo Scheduled*, *Negotiation*, *Won*, *Lost*) with interaction notes.
+- **Personal Analytics:** Visual donut and bar charts showing individual stage conversion.
+
+### 2. RM (Reporting Manager) Dashboard (Team Tracking)
+- **Team KPIs:** Aggregated metrics for *Team Total Leads*, *Team Open Deals*, *Team Closed Won*, *Team Conversion Rate (%)*, and *Team Gross Pipeline Value*.
+- **Team Leaderboard:** Visual ranking and stacked bar chart benchmarking sales reps under this RM by deals won, active deals, and revenue.
+- **Team Pipeline Table:** Full view of all leads owned by the RM's reporting sales reps.
+- **Lead Reassignment Tool:** Select any lead from the team and reassign it to another sales rep within the RM's team with transfer notes.
+
+### 3. Admin Dashboard (Master Tracking & Governance)
+- **Master Company Pipeline:** Comprehensive table of every lead across VP Info Solutions Pvt Ltd, explicitly showing **Sales Person Owner** and their **Reporting RM**.
+- **Global KPIs:** High-level corporate summary (*Total Company Leads*, *Total Closed Won*, *Overall Sales Conversion Rate*, *Total Pipeline Value*, *Closed Won Revenue*).
+- **Executive Visualizations:** Breakdown by Tally Product interest and Industry distribution.
+- **User Management & Hierarchy Mapping:**
+  - View all registered users across all branches.
+  - Create new accounts (Admin, RM, or Sales Person).
+  - Map or re-map Sales Persons to specific Regional Managers.
+  - Activate or deactivate employee accounts.
+- **Power BI Reporting Hub:** One-click CSV dataset export and live REST API connector feed.
+
+---
+
+## 🗄️ MySQL Database Setup (Production)
+
+To point Antigravity to a production **MySQL** database:
+
+1. Import the comprehensive SQL schema and views located in [`database/schema.sql`](database/schema.sql):
+   ```bash
+   mysql -u root -p < database/schema.sql
+   ```
+2. Set the `DATABASE_URL` environment variable before running:
+   ```bash
+   # Windows PowerShell:
+   $env:DATABASE_URL="mysql+pymysql://username:password@localhost:3306/vp_antigravity_db"
+   python run.py
+   ```
+
+### Relational Schema Summary:
+- `users`: Stores user identity, bcrypt/salted credentials, roles, and self-referential `rm_id` foreign key.
+- `leads`: Relational link `sales_person_id` referencing `users(id)`.
+- `lead_activity_logs`: Complete audit trail of stage changes, transfers, and notes.
+
+---
+
+## 📊 Microsoft Power BI Integration Guide
+
+Antigravity provides two seamless ways for VP Info Solutions to build executive dashboards in Power BI:
+
+### Method A: Live Power BI Web REST Connector
+1. Open **Power BI Desktop**.
+2. Click **Get Data** &rarr; **Web**.
+3. Enter URL:
+   ```text
+   http://127.0.0.1:8000/api/export/powerbi?format=json
+   ```
+4. Power BI will parse the JSON rows and enable automated scheduled refreshes.
+
+### Method B: Direct MySQL Views (DirectQuery / Import)
+Connect Power BI directly to the MySQL database `vp_antigravity_db` and select the pre-built reporting views:
+- `vw_powerbi_leads_master`: Star-schema fact table with joined sales rep names, RM names, cycle days, and values.
+- `vw_powerbi_sales_rep_summary`: Aggregated conversion metrics per representative.
+- `vw_powerbi_rm_team_summary`: Aggregated team metrics per Regional Manager.
+- `vw_powerbi_monthly_trends`: Historical trends and product sales velocity.
+
+---
+
+## 🧪 Automated Test Verification
+
+Run the automated test suite to verify the entire system flow:
+```bash
+python tests/test_flow.py
+```
+*Tests role authentication, sales scoping, RM team tracking, lead reassignment, user governance, and Power BI output formats.*
