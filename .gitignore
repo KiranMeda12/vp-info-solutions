@@ -30,3 +30,6 @@ htmlcov/
 Thumbs.db
 
 .vercel
+
+_uv/
+
