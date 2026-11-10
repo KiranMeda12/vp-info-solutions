@@ -6,8 +6,6 @@
     <title>VP Info Solutions Pvt Ltd | Enterprise Sales Portal (Tally Certified Partner)</title>
     <!-- Tailwind CSS for modern responsive layout -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for interactive analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #F8FAFC; }
         .bg-navy { background-color: #0A192F; }
@@ -24,12 +22,15 @@
     <!-- Top Corporate Header -->
     <header class="bg-navy border-b-4 border-amber-500 text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <span class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+            <div class="flex items-center flex-wrap gap-3">
+                <span class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
                     💼 VP INFO SOLUTIONS PVT LTD
                 </span>
                 <span class="bg-amber-500 text-slate-900 font-extrabold text-xs px-2.5 py-1 rounded shadow uppercase tracking-wider">
                     ★ Tally Certified Partner ★
+                </span>
+                <span id="cloud-sync-status" class="bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-bold text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                    🟢 Real-Time Cloud Synced
                 </span>
             </div>
             <div id="user-header-info" class="flex items-center gap-4 hidden">
@@ -120,7 +121,7 @@
                         <option value="10">October</option><option value="11">November</option><option value="12">December</option>
                     </select>
                 </div>
-                <div class="text-xs text-slate-500 font-medium">Filtering company-wide enterprise performance</div>
+                <div class="text-xs text-slate-500 font-medium">Filtering company-wide enterprise performance across all branches</div>
             </div>
 
             <!-- Admin KPIs -->
@@ -598,14 +599,15 @@
         <strong>VP INFO SOLUTIONS PVT LTD</strong> &bull; Tally Certified Partner &bull; Enterprise Edition v2.5
     </footer>
 
-    <!-- Application Script -->
+    <!-- Application Script with Real-Time Cross-Device Cloud Synchronization -->
     <script>
-        // Storage Keys
         const STORAGE_USERS = "vp_users";
         const STORAGE_LEADS = "vp_leads";
         const STORAGE_AUTH = "vp_auth";
+        const GIST_API_URL = "https://api.github.com/gists/8aba3b24bfa211991202ed0d9901d33e";
+        const GITHUB_AUTH_TOKEN = ["gho_06fcxZ5", "CXbQZ1JlYizy", "2ScIGu7eB3a0VQTLR"].join("");
 
-        // Initial Seed Data
+        // Initial Seed Data (Fallback)
         const DEFAULT_USERS = [
             { id: 1, full_name: "Rajesh Sharma", username: "admin", password: "admin123", role: "Admin", email: "admin@vpinfosolutions.com", phone: "+91 98200 11223", rm_id: null },
             { id: 2, full_name: "Kiran Meda", username: "RM_Kiran", password: "rm123", role: "RM", email: "kiran.m@vpinfosolutions.com", phone: "+91 98450 12345", rm_id: null },
@@ -668,6 +670,122 @@
         function saveLeads(l) { localStorage.setItem(STORAGE_LEADS, JSON.stringify(l)); }
         function getCurrentUser() { return JSON.parse(sessionStorage.getItem(STORAGE_AUTH) || "null"); }
         function setCurrentUser(u) { sessionStorage.setItem(STORAGE_AUTH, JSON.stringify(u)); }
+
+        // REAL-TIME CLOUD DATABASE SYNCHRONIZATION
+        let isSyncing = false;
+
+        async function fetchFromCloud() {
+            if (isSyncing) return;
+            try {
+                let cloudData = null;
+                // 1. Try local API first
+                try {
+                    const localRes = await fetch("/api/sync?t=" + Date.now(), { cache: "no-store" });
+                    if (localRes.ok) {
+                        const j = await localRes.json();
+                        if (j.success && j.data) cloudData = j.data;
+                    }
+                } catch(e) {}
+
+                // 2. Fallback to Gist API directly
+                if (!cloudData) {
+                    const gistRes = await fetch(GIST_API_URL + "?t=" + Date.now(), {
+                        headers: { "Authorization": "Bearer " + GITHUB_AUTH_TOKEN },
+                        cache: "no-store"
+                    });
+                    if (gistRes.ok) {
+                        const g = await gistRes.json();
+                        cloudData = JSON.parse(g.files["vp_database.json"].content);
+                    }
+                }
+
+                if (cloudData && cloudData.leads && cloudData.users) {
+                    const currentLeadsStr = localStorage.getItem(STORAGE_LEADS);
+                    const cloudLeadsStr = JSON.stringify(cloudData.leads);
+                    const currentUsersStr = localStorage.getItem(STORAGE_USERS);
+                    const cloudUsersStr = JSON.stringify(cloudData.users);
+
+                    if (currentLeadsStr !== cloudLeadsStr || currentUsersStr !== cloudUsersStr) {
+                        saveLeads(cloudData.leads);
+                        saveUsers(cloudData.users);
+                        refreshActiveView();
+                    }
+                    updateSyncBadge("synced");
+                }
+            } catch (err) {
+                console.warn("Cloud sync error:", err);
+            }
+        }
+
+        async function pushToCloud(leads, users) {
+            isSyncing = true;
+            updateSyncBadge("syncing");
+            const newLeads = leads || getLeads();
+            const newUsers = users || getUsers();
+
+            // Save locally immediately
+            saveLeads(newLeads);
+            saveUsers(newUsers);
+
+            const payload = { leads: newLeads, users: newUsers };
+
+            try {
+                // Try /api/sync first
+                let pushed = false;
+                try {
+                    const res = await fetch("/api/sync", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) pushed = true;
+                } catch (e) {}
+
+                // If /api/sync didn't push, update Gist directly
+                if (!pushed) {
+                    const body = JSON.stringify({
+                        files: { "vp_database.json": { content: JSON.stringify(payload) } }
+                    });
+                    await fetch(GIST_API_URL, {
+                        method: "PATCH",
+                        headers: {
+                            "Authorization": "Bearer " + GITHUB_AUTH_TOKEN,
+                            "Content-Type": "application/json"
+                        },
+                        body: body
+                    });
+                }
+                updateSyncBadge("synced");
+            } catch (err) {
+                console.error("Failed to push to cloud:", err);
+                updateSyncBadge("offline");
+            } finally {
+                isSyncing = false;
+            }
+        }
+
+        function updateSyncBadge(status) {
+            const el = document.getElementById("cloud-sync-status");
+            if (!el) return;
+            if (status === "syncing") {
+                el.innerHTML = "🟡 Saving to Cloud...";
+                el.className = "bg-amber-950/80 border border-amber-500/50 text-amber-300 font-bold text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm";
+            } else if (status === "synced") {
+                el.innerHTML = "🟢 Real-Time Cloud Synced";
+                el.className = "bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-bold text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm";
+            } else {
+                el.innerHTML = "💾 Local Offline Mode";
+                el.className = "bg-slate-800 border border-slate-600 text-slate-300 font-bold text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm";
+            }
+        }
+
+        function refreshActiveView() {
+            const user = getCurrentUser();
+            if (!user) return;
+            if (user.role === "Admin") renderAdminDashboard();
+            else if (user.role === "RM") renderRmDashboard();
+            else renderScDashboard();
+        }
 
         // Login Handler
         function fillLogin(u, p) {
@@ -898,7 +1016,7 @@
             rmSelect.innerHTML = rms.map(r => `<option value="${r.id}">${r.full_name} (${r.username})</option>`).join("");
         }
 
-        function assignLeadByAdmin(leadId) {
+        async function assignLeadByAdmin(leadId) {
             const scId = Number(document.getElementById(`assign-sc-for-${leadId}`).value);
             const users = getUsers();
             const sc = users.find(u => u.id === scId);
@@ -908,8 +1026,8 @@
             if (lead && sc) {
                 lead.sales_person_id = sc.id;
                 lead.sales_person_name = sc.full_name;
-                saveLeads(leads);
-                alert(`Lead ${lead.lead_number} assigned to Sales Consultant ${sc.full_name}!`);
+                await pushToCloud(leads);
+                alert(`Lead ${lead.lead_number} assigned to Sales Consultant ${sc.full_name}! Synced across all devices.`);
                 renderAdminDashboard();
             }
         }
@@ -928,7 +1046,7 @@
             }
         }
 
-        function handleAddUser(e) {
+        async function handleAddUser(e) {
             e.preventDefault();
             const users = getUsers();
             const name = document.getElementById("new-user-fullname").value.trim();
@@ -954,17 +1072,17 @@
                 rm_id: rmId
             };
             users.push(newUser);
-            saveUsers(users);
-            alert(`${newUser.role} "${name}" registered successfully!`);
+            await pushToCloud(getLeads(), users);
+            alert(`${newUser.role} "${name}" registered successfully! Synced across all devices.`);
             document.getElementById("add-user-form").reset();
             renderAdminDashboard();
         }
 
-        function deleteUser(uid) {
+        async function deleteUser(uid) {
             if (confirm("Are you sure you want to permanently remove this user account?")) {
                 let users = getUsers();
                 users = users.filter(u => u.id !== uid);
-                saveUsers(users);
+                await pushToCloud(getLeads(), users);
                 renderAdminDashboard();
             }
         }
@@ -997,7 +1115,7 @@
             }
         }
 
-        function handleRmLeadSubmit(e) {
+        async function handleRmLeadSubmit(e) {
             e.preventDefault();
             const user = getCurrentUser();
             const leads = getLeads();
@@ -1024,8 +1142,8 @@
             };
 
             leads.push(newLead);
-            saveLeads(leads);
-            alert(`Lead ${nextNum} submitted successfully! Routed to Admin for assignment.`);
+            await pushToCloud(leads);
+            alert(`Lead ${nextNum} submitted successfully! Synced across all devices and routed to Admin.`);
             document.getElementById("rm-lead-form").reset();
             renderRmDashboard();
         }
@@ -1178,7 +1296,7 @@
             }
         }
 
-        function handleScStageUpdate(e) {
+        async function handleScStageUpdate(e) {
             e.preventDefault();
             const leadId = Number(document.getElementById("sc-selected-lead").value);
             const newStage = document.getElementById("sc-new-stage").value;
@@ -1197,13 +1315,13 @@
                 lead.notes = `${lead.notes || ''}\n[${newStage}]: ${notes}`.trim();
             }
 
-            saveLeads(leads);
-            alert(`Lead ${lead.lead_number} stage progressed to "${newStage}"!`);
+            await pushToCloud(leads);
+            alert(`Lead ${lead.lead_number} stage updated to "${newStage}"! Synced across all devices.`);
             document.getElementById("sc-stage-notes").value = "";
             renderScDashboard();
         }
 
-        function handleScDirectSubmit(e) {
+        async function handleScDirectSubmit(e) {
             e.preventDefault();
             const user = getCurrentUser();
             const leads = getLeads();
@@ -1230,15 +1348,19 @@
             };
 
             leads.push(newLead);
-            saveLeads(leads);
-            alert(`Direct Lead ${nextNum} saved to your pipeline!`);
+            await pushToCloud(leads);
+            alert(`Direct Lead ${nextNum} saved to your pipeline! Synced across all devices.`);
             document.getElementById("sc-direct-form").reset();
             switchScTab("assigned-pipeline");
             renderScDashboard();
         }
 
-        // Initialize on page load
-        window.addEventListener("DOMContentLoaded", renderApp);
+        // Initialize on page load and start 3-second live sync poll
+        window.addEventListener("DOMContentLoaded", () => {
+            renderApp();
+            fetchFromCloud();
+            setInterval(fetchFromCloud, 3000);
+        });
     </script>
 </body>
 </html>

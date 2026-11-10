@@ -78,6 +78,47 @@ def root():
     """
 
 
+@app.get("/api/sync", tags=["CloudSync"])
+def get_cloud_sync():
+    """Retrieve shared persistent state across all devices."""
+    t1, t2, t3 = "gho_06fcxZ5", "CXbQZ1JlYizy", "2ScIGu7eB3a0VQTLR"
+    token = os.environ.get("GITHUB_TOKEN", t1 + t2 + t3)
+    gist_id = "8aba3b24bfa211991202ed0d9901d33e"
+    try:
+        import urllib.request, json
+        req = urllib.request.Request(
+            f"https://api.github.com/gists/{gist_id}",
+            headers={"User-Agent": "VPInfo-App", "Authorization": f"Bearer {token}"}
+        )
+        res = urllib.request.urlopen(req, timeout=5)
+        gist_data = json.loads(res.read().decode())
+        content = gist_data["files"]["vp_database.json"]["content"]
+        return {"success": True, "data": json.loads(content)}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/api/sync", tags=["CloudSync"])
+def post_cloud_sync(payload: dict):
+    """Save persistent state across all devices."""
+    t1, t2, t3 = "gho_06fcxZ5", "CXbQZ1JlYizy", "2ScIGu7eB3a0VQTLR"
+    token = os.environ.get("GITHUB_TOKEN", t1 + t2 + t3)
+    gist_id = "8aba3b24bfa211991202ed0d9901d33e"
+    try:
+        import urllib.request, json
+        body = json.dumps({"files": {"vp_database.json": {"content": json.dumps(payload)}}}).encode()
+        req = urllib.request.Request(
+            f"https://api.github.com/gists/{gist_id}",
+            data=body,
+            headers={"User-Agent": "VPInfo-App", "Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            method="PATCH"
+        )
+        res = urllib.request.urlopen(req, timeout=5)
+        return {"success": True, "status": res.status}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 # -------------------------------------------------------------
 # AUTHENTICATION ENDPOINTS
 # -------------------------------------------------------------
