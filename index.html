@@ -3,134 +3,1242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VP Info Solutions Pvt Ltd | Enterprise Sales Portal</title>
+    <title>VP Info Solutions Pvt Ltd | Enterprise Sales Portal (Tally Certified Partner)</title>
+    <!-- Tailwind CSS for modern responsive layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for interactive analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #0A192F 0%, #0F2A4A 60%, #1A365D 100%);
-            color: #FFFFFF;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-        .card {
-            background: #FFFFFF;
-            color: #0F172A;
-            max-width: 680px;
-            width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-            overflow: hidden;
-            border-top: 4px solid #F59E0B;
-        }
-        .header {
-            background: #0A192F;
-            color: #FFFFFF;
-            padding: 28px 32px;
-            text-align: center;
-        }
-        .badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-            color: #0F172A;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-top: 8px;
-        }
-        .body {
-            padding: 32px;
-        }
-        .notice-box {
-            background: #EFF6FF;
-            border: 1px solid #BFDBFE;
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 24px;
-        }
-        .btn {
-            display: block;
-            text-align: center;
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 15px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            margin-bottom: 12px;
-        }
-        .btn-primary {
-            background: #2563EB;
-            color: #FFFFFF;
-        }
-        .btn-primary:hover {
-            background: #1D4ED8;
-        }
-        .btn-secondary {
-            background: #F1F5F9;
-            color: #0F172A;
-            border: 1px solid #CBD5E1;
-        }
-        .btn-secondary:hover {
-            background: #E2E8F0;
-        }
-        .steps {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            font-size: 13.5px;
-            line-height: 1.6;
-            color: #334155;
-        }
-        .steps ol {
-            margin-left: 20px;
-            margin-top: 8px;
-        }
-        .steps li {
-            margin-bottom: 6px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #F8FAFC; }
+        .bg-navy { background-color: #0A192F; }
+        .bg-navy-light { background-color: #0F2A4A; }
+        .text-gold { color: #F59E0B; }
+        .border-gold { border-color: #F59E0B; }
+        .badge-admin { background: linear-gradient(135deg, #7C3AED, #9333EA); color: #fff; }
+        .badge-rm { background: linear-gradient(135deg, #0284C7, #0369A1); color: #fff; }
+        .badge-sc { background: linear-gradient(135deg, #059669, #10B981); color: #fff; }
     </style>
 </head>
-<body>
-    <div class="card">
-        <div class="header">
-            <h1 style="font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">VP INFO SOLUTIONS PVT LTD</h1>
-            <div class="badge">★ Tally Certified Partner ★</div>
-            <p style="font-size: 13px; color: #94A3B8; margin-top: 8px;">Enterprise Lead Tracking & Sales Governance System</p>
-        </div>
-        <div class="body">
-            <div class="notice-box">
-                <h3 style="font-size: 15px; color: #1E40AF; font-weight: 800; margin-bottom: 6px;">💡 Why Streamlit Needs Streamlit Community Cloud</h3>
-                <p style="font-size: 13px; color: #1E3A8A; line-height: 1.5;">
-                    This application's frontend is built with <strong>Python Streamlit</strong>, which uses persistent WebSockets for live data updates. Serverless platforms like Vercel shut down after single HTTP requests, whereas <strong>Streamlit Community Cloud</strong> is 100% free and specifically designed to host Streamlit apps with 1 click.
-                </p>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Top Corporate Header -->
+    <header class="bg-navy border-b-4 border-amber-500 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                    💼 VP INFO SOLUTIONS PVT LTD
+                </span>
+                <span class="bg-amber-500 text-slate-900 font-extrabold text-xs px-2.5 py-1 rounded shadow uppercase tracking-wider">
+                    ★ Tally Certified Partner ★
+                </span>
             </div>
-
-            <a href="https://share.streamlit.io" target="_blank" class="btn btn-primary">
-                🚀 Launch on Streamlit Community Cloud (Free 1-Click) →
-            </a>
-            <a href="https://github.com/KiranMeda12/vp-info-solutions" target="_blank" class="btn btn-secondary">
-                📂 View GitHub Source Code Repository
-            </a>
-
-            <div class="steps">
-                <strong>⚡ How to Deploy on Streamlit Community Cloud in 60 seconds:</strong>
-                <ol>
-                    <li>Open <a href="https://share.streamlit.io" target="_blank" style="color: #2563EB; font-weight: 700;">share.streamlit.io</a> and sign in with your GitHub account (<strong>KiranMeda12</strong>).</li>
-                    <li>Click <strong>New app</strong> and choose repository: <strong>KiranMeda12/vp-info-solutions</strong>.</li>
-                    <li>Set <strong>Main file path</strong> to: <code style="background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 700;">frontend/app.py</code>.</li>
-                    <li>Click <strong>Deploy!</strong> — Your live dashboard will be instantly online!</li>
-                </ol>
+            <div id="user-header-info" class="flex items-center gap-4 hidden">
+                <div class="text-right">
+                    <div class="text-sm font-bold text-white flex items-center justify-end gap-2">
+                        <span id="header-user-name">User Name</span>
+                        <span id="header-user-role" class="px-2.5 py-0.5 rounded-full text-xs font-black uppercase">Role</span>
+                    </div>
+                    <div id="header-user-email" class="text-xs text-slate-400">user@vpinfo.com</div>
+                </div>
+                <button onclick="logout()" class="bg-slate-800 hover:bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                    Sign Out 🚪
+                </button>
             </div>
         </div>
-    </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- 1. AUTHENTICATION / LOGIN VIEW -->
+        <section id="login-section" class="max-w-md mx-auto my-8 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 p-8 text-center text-white border-b-2 border-amber-500">
+                <h2 class="text-2xl font-black tracking-tight">VP INFO SOLUTIONS</h2>
+                <div class="text-amber-400 font-bold text-xs uppercase tracking-widest mt-1">★ Tally Certified Partner ★</div>
+                <p class="text-slate-400 text-xs mt-2">Enterprise Lead Tracking & Sales Governance</p>
+            </div>
+            <div class="p-6 sm:p-8 space-y-4">
+                <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">⚡ Quick 1-Click Master Sign In:</div>
+                    <div class="grid grid-cols-1 gap-1.5">
+                        <button onclick="fillLogin('admin', 'admin123')" class="w-full text-left text-xs bg-purple-50 hover:bg-purple-100 text-purple-900 font-semibold px-3 py-1.5 rounded border border-purple-200 transition">
+                            👑 <strong>Admin View</strong> (admin / admin123)
+                        </button>
+                        <button onclick="fillLogin('RM_Kiran', 'rm123')" class="w-full text-left text-xs bg-sky-50 hover:bg-sky-100 text-sky-900 font-semibold px-3 py-1.5 rounded border border-sky-200 transition">
+                            👔 <strong>Relationship Manager (RM)</strong> (RM_Kiran / rm123)
+                        </button>
+                        <button onclick="fillLogin('Sales_kiran', 'sales123')" class="w-full text-left text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-semibold px-3 py-1.5 rounded border border-emerald-200 transition">
+                            🎯 <strong>Sales Consultant (SC)</strong> (Sales_kiran / sales123)
+                        </button>
+                    </div>
+                </div>
+
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Corporate Identity / Username</label>
+                        <input type="text" id="login-username" required placeholder="Enter username" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:bg-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Access Key / Password</label>
+                        <input type="password" id="login-password" required placeholder="Enter password" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:bg-white outline-none">
+                    </div>
+                    <div id="login-error" class="text-xs text-red-600 font-bold hidden"></div>
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg shadow transition">
+                        Secure Sign In →
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. ADMIN PORTAL -->
+        <section id="admin-section" class="hidden space-y-6">
+            <!-- Timeframe Filter -->
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-base font-bold text-slate-800">📅 Performance Timeframe</span>
+                    <select id="admin-year-filter" onchange="renderAdminDashboard()" class="text-xs font-semibold bg-slate-100 border border-slate-300 rounded-md px-3 py-1.5 outline-none">
+                        <option value="All Years">All Years</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>
+                        <option value="2032">2032</option>
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>
+                        <option value="2035">2035</option>
+                        <option value="2036">2036</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                    <select id="admin-month-filter" onchange="renderAdminDashboard()" class="text-xs font-semibold bg-slate-100 border border-slate-300 rounded-md px-3 py-1.5 outline-none">
+                        <option value="All Months" selected>All Months</option>
+                        <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                        <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                        <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                        <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                    </select>
+                </div>
+                <div class="text-xs text-slate-500 font-medium">Filtering company-wide enterprise performance</div>
+            </div>
+
+            <!-- Admin KPIs -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div class="bg-white border-t-4 border-blue-600 rounded-xl p-4 shadow-sm">
+                    <div class="text-xs font-bold text-slate-400 uppercase">Total Leads</div>
+                    <div id="adm-kpi-total" class="text-2xl font-black text-slate-900 mt-1">0</div>
+                    <div class="text-xs text-blue-600 font-semibold mt-1">All Pipelines</div>
+                </div>
+                <div class="bg-white border-t-4 border-emerald-600 rounded-xl p-4 shadow-sm">
+                    <div class="text-xs font-bold text-slate-400 uppercase">Closed Won</div>
+                    <div id="adm-kpi-won" class="text-2xl font-black text-slate-900 mt-1">0</div>
+                    <div class="text-xs text-emerald-600 font-semibold mt-1">Successful Closures</div>
+                </div>
+                <div class="bg-white border-t-4 border-amber-500 rounded-xl p-4 shadow-sm">
+                    <div class="text-xs font-bold text-slate-400 uppercase">Open Pipeline</div>
+                    <div id="adm-kpi-open" class="text-2xl font-black text-slate-900 mt-1">0</div>
+                    <div class="text-xs text-amber-600 font-semibold mt-1">Active Deals</div>
+                </div>
+                <div class="bg-white border-t-4 border-purple-600 rounded-xl p-4 shadow-sm">
+                    <div class="text-xs font-bold text-slate-400 uppercase">Won Value (₹)</div>
+                    <div id="adm-kpi-value" class="text-2xl font-black text-slate-900 mt-1">₹0</div>
+                    <div class="text-xs text-purple-600 font-semibold mt-1">Realized Revenue</div>
+                </div>
+                <div class="bg-white border-t-4 border-indigo-600 rounded-xl p-4 shadow-sm">
+                    <div class="text-xs font-bold text-slate-400 uppercase">Win Rate</div>
+                    <div id="adm-kpi-winrate" class="text-2xl font-black text-slate-900 mt-1">0.0%</div>
+                    <div class="text-xs text-indigo-600 font-semibold mt-1">Conversion %</div>
+                </div>
+            </div>
+
+            <!-- Admin Navigation Tabs -->
+            <div class="border-b border-slate-200">
+                <nav class="flex space-x-4">
+                    <button onclick="switchAdminTab('sc-standings')" id="tabbtn-sc-standings" class="tab-btn pb-3 px-2 font-bold text-sm border-b-2 border-amber-500 text-slate-900">
+                        🎯 Sales Consultants (SC) Standings
+                    </button>
+                    <button onclick="switchAdminTab('rm-dash')" id="tabbtn-rm-dash" class="tab-btn pb-3 px-2 font-bold text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent">
+                        👔 Relationship Managers (RM) Dashboard
+                    </button>
+                    <button onclick="switchAdminTab('pending-assign')" id="tabbtn-pending-assign" class="tab-btn pb-3 px-2 font-bold text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent">
+                        📥 RM Leads Pending Assignment (<span id="unassigned-badge-count">0</span>)
+                    </button>
+                    <button onclick="switchAdminTab('user-mgmt')" id="tabbtn-user-mgmt" class="tab-btn pb-3 px-2 font-bold text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent">
+                        ⚙️ Team Governance & Accounts
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Subtab 1: SC Standings Table -->
+            <div id="adm-tab-sc-standings" class="space-y-4">
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <h3 class="text-base font-extrabold text-slate-900 mb-3 flex items-center justify-between">
+                        <span>🏆 Sales Consultant Standings</span>
+                        <span class="text-xs font-normal text-slate-500">Ranked by Won Deals & Price on Win</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 uppercase font-black border-b border-slate-200">
+                                    <th class="p-3">Sales Consultant</th>
+                                    <th class="p-3">Total Assigned</th>
+                                    <th class="p-3 text-emerald-700">Won</th>
+                                    <th class="p-3 text-red-600">Not Interested</th>
+                                    <th class="p-3">Win Rate (%)</th>
+                                    <th class="p-3 text-right">Price on Win (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sc-standings-tbody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subtab 2: RM Dashboard -->
+            <div id="adm-tab-rm-dash" class="hidden space-y-4">
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <h3 class="text-base font-extrabold text-slate-900 mb-3">👔 Relationship Managers (RM) Overview & Leaderboard</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 uppercase font-black border-b border-slate-200">
+                                    <th class="p-3">Relationship Manager</th>
+                                    <th class="p-3">Leads Raised</th>
+                                    <th class="p-3">Assigned Sales Team</th>
+                                    <th class="p-3">Team Won</th>
+                                    <th class="p-3">Team Conversion Rate</th>
+                                    <th class="p-3 text-right">Team Pipeline Value (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rm-leaderboard-tbody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subtab 3: Pending Leads Assignment -->
+            <div id="adm-tab-pending-assign" class="hidden space-y-4">
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <h3 class="text-base font-extrabold text-slate-900 mb-1">📥 RM Leads Raised — Pending Admin Assignment</h3>
+                    <p class="text-xs text-slate-500 mb-4">Leads generated by Relationship Managers must be reviewed and assigned to a Sales Consultant by Admin.</p>
+                    <div id="unassigned-leads-container" class="space-y-4">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subtab 4: User Management -->
+            <div id="adm-tab-user-mgmt" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- User Directory & Delete -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+                    <h3 class="text-base font-extrabold text-slate-900">👥 Active Team Directory</h3>
+                    <div class="overflow-x-auto max-h-72">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
+                                    <th class="p-2">Name</th>
+                                    <th class="p-2">Role</th>
+                                    <th class="p-2">Username</th>
+                                    <th class="p-2">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-mgmt-tbody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Add User Forms -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+                    <h3 class="text-base font-extrabold text-slate-900">➕ Register New Team Account</h3>
+                    <div class="flex gap-2 border-b pb-2">
+                        <button onclick="setAddUserType('RM')" id="btn-add-rm-type" class="px-3 py-1 text-xs font-bold bg-sky-100 text-sky-800 rounded">Add Relationship Manager (RM)</button>
+                        <button onclick="setAddUserType('SC')" id="btn-add-sc-type" class="px-3 py-1 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded">Add Sales Consultant (SC)</button>
+                    </div>
+                    <form id="add-user-form" onsubmit="handleAddUser(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600">Full Name *</label>
+                            <input type="text" id="new-user-fullname" required class="w-full text-xs p-2 bg-slate-50 border rounded">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600">Username *</label>
+                                <input type="text" id="new-user-username" required class="w-full text-xs p-2 bg-slate-50 border rounded">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600">Password *</label>
+                                <input type="password" id="new-user-password" required class="w-full text-xs p-2 bg-slate-50 border rounded">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600">Email Address</label>
+                                <input type="email" id="new-user-email" class="w-full text-xs p-2 bg-slate-50 border rounded">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600">Phone</label>
+                                <input type="text" id="new-user-phone" class="w-full text-xs p-2 bg-slate-50 border rounded">
+                            </div>
+                        </div>
+                        <div id="sc-rm-select-container" class="hidden">
+                            <label class="block text-xs font-bold text-slate-600">Assign to Relationship Manager (Reporting RM)</label>
+                            <select id="new-user-rmid" class="w-full text-xs p-2 bg-slate-50 border rounded">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-slate-900 hover:bg-amber-600 text-white font-bold py-2 rounded text-xs transition">
+                            Create Account →
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. RELATIONSHIP MANAGER (RM) PORTAL -->
+        <section id="rm-section" class="hidden space-y-6">
+            <div class="bg-white border-l-4 border-sky-600 rounded-xl p-6 shadow-sm">
+                <h2 class="text-xl font-black text-slate-900">👔 Relationship Manager (RM) Workspace</h2>
+                <p class="text-xs text-slate-500 mt-1">Generate client prospect leads with meeting details. All raised leads are allocated to Sales Consultants by Admin.</p>
+            </div>
+
+            <!-- RM Lead Intake Form -->
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+                <div class="border-b pb-3 flex justify-between items-center">
+                    <h3 class="text-base font-extrabold text-slate-900">📝 Log Prospect Meeting</h3>
+                    <span class="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-2 py-1 rounded" id="rm-next-lead-num">Auto-Generated Lead #</span>
+                </div>
+                <form id="rm-lead-form" onsubmit="handleRmLeadSubmit(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Name of Company *</label>
+                                <input type="text" id="rm-company" required placeholder="e.g. Mahavir Engineering Works" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Name of Person to Meet *</label>
+                                <input type="text" id="rm-person" required placeholder="e.g. Suresh Jain" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Their Designation *</label>
+                                <input type="text" id="rm-desig" required placeholder="e.g. Managing Director / CFO" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Contact Number *</label>
+                                <input type="text" id="rm-phone" required placeholder="e.g. +91 98220 12345" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Email Address</label>
+                                <input type="email" id="rm-email" placeholder="e.g. contact@mahavir.com" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Which Product They Are Interested *</label>
+                                <select id="rm-product" required class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg font-semibold">
+                                    <option value="TallyPrime Silver/Gold">TallyPrime Silver/Gold</option>
+                                    <option value="Tally.ERP 9 Upgrade to Prime">Tally.ERP 9 Upgrade to Prime</option>
+                                    <option value="Tally Customization (TDL)">Tally Customization (TDL)</option>
+                                    <option value="Annual Maintenance Contract (AMC)">Annual Maintenance Contract (AMC)</option>
+                                    <option value="Tally on Cloud">Tally on Cloud</option>
+                                    <option value="Tally Server 9">Tally Server 9</option>
+                                    <option value="Tally API & ERP Integration">Tally API & ERP Integration</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase">Meeting Date *</label>
+                                    <input type="date" id="rm-date" required class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase">Meeting Timings *</label>
+                                    <input type="text" id="rm-time" required placeholder="e.g. 11:30 AM" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Company / Meeting Address *</label>
+                                <textarea id="rm-address" required rows="3" placeholder="e.g. Plot 18, Phase 1, Hinjewadi IT Park, Pune" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Requirement Details / Meeting Notes</label>
+                        <textarea id="rm-notes" rows="2" placeholder="e.g. Customer wants on-premise multi-user setup with customized invoice printing..." class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-sky-700 hover:bg-sky-800 text-white font-bold py-3 rounded-lg shadow transition text-sm">
+                        Submit Lead for Admin Assignment →
+                    </button>
+                </form>
+            </div>
+
+            <!-- RM Personal History Table -->
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <h3 class="text-base font-extrabold text-slate-900 mb-3">📋 Leads Raised by You</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 uppercase font-black border-b">
+                                <th class="p-2.5">Lead #</th>
+                                <th class="p-2.5">Company</th>
+                                <th class="p-2.5">Person to Meet</th>
+                                <th class="p-2.5">Product</th>
+                                <th class="p-2.5">Meeting Time</th>
+                                <th class="p-2.5">Status</th>
+                                <th class="p-2.5">Assigned Consultant</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rm-my-leads-tbody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SALES CONSULTANT (SC) PORTAL -->
+        <section id="sc-section" class="hidden space-y-6">
+            <div class="bg-white border-l-4 border-emerald-600 rounded-xl p-6 shadow-sm">
+                <h2 class="text-xl font-black text-slate-900">🎯 Sales Consultant Command Center</h2>
+                <p class="text-xs text-slate-500 mt-1">Review full RM prospect submissions, conduct meetings, update stages, and record final won deal value.</p>
+            </div>
+
+            <!-- SC Tabs: Pipeline vs Direct Lead -->
+            <div class="border-b border-slate-200">
+                <nav class="flex space-x-4">
+                    <button onclick="switchScTab('assigned-pipeline')" id="tabbtn-sc-pipeline" class="tab-btn pb-3 px-2 font-bold text-sm border-b-2 border-emerald-600 text-slate-900">
+                        📋 Assigned Pipeline & Stage Progression
+                    </button>
+                    <button onclick="switchScTab('direct-lead')" id="tabbtn-sc-direct" class="tab-btn pb-3 px-2 font-bold text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent">
+                        ➕ Log Direct Prospect Lead
+                    </button>
+                    <button onclick="switchScTab('sc-lb')" id="tabbtn-sc-lb" class="tab-btn pb-3 px-2 font-bold text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent">
+                        🏆 Consultant Standings
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Tab 1: Assigned Pipeline Table + Dossier Card + Stage Progression -->
+            <div id="sc-tab-pipeline" class="space-y-6">
+                <!-- All RM Details Table -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+                    <h3 class="text-base font-extrabold text-slate-900 flex justify-between items-center">
+                        <span>📋 All Assigned Prospects (Full Details from RM)</span>
+                        <span class="text-xs font-normal text-slate-500">Every detail entered by RM is visible below</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse min-w-[950px]">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 uppercase font-bold border-b">
+                                    <th class="p-2.5">Lead #</th>
+                                    <th class="p-2.5">Company Name</th>
+                                    <th class="p-2.5">Person to Meet</th>
+                                    <th class="p-2.5">Designation</th>
+                                    <th class="p-2.5">Phone Number</th>
+                                    <th class="p-2.5">Meeting Schedule</th>
+                                    <th class="p-2.5">Interested Product</th>
+                                    <th class="p-2.5">Stage</th>
+                                    <th class="p-2.5">Generated by RM</th>
+                                    <th class="p-2.5">Meeting Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sc-assigned-tbody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Interactive Dossier Card & Stage Update Tool -->
+                <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+                    <h3 class="text-base font-extrabold text-slate-900">⚡ View Prospect Dossier & Progress Stage</h3>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Select Prospect to Inspect & Update:</label>
+                        <select id="sc-selected-lead" onchange="renderScDossier()" class="w-full text-xs font-bold p-2.5 bg-slate-50 border rounded-lg">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <!-- Full Dossier Card -->
+                    <div id="sc-dossier-card" class="bg-slate-50 border-l-4 border-blue-600 p-5 rounded-lg border border-slate-200 space-y-3 hidden">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Stage Update Form -->
+                    <form id="sc-stage-form" onsubmit="handleScStageUpdate(event)" class="bg-slate-100 p-4 rounded-lg grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Progress Stage To:</label>
+                            <select id="sc-new-stage" onchange="toggleWonPriceInput()" class="w-full text-xs font-bold p-2 bg-white border rounded">
+                                <option value="New">New</option>
+                                <option value="Contacted">Contacted</option>
+                                <option value="Demo Scheduled">Demo Scheduled</option>
+                                <option value="Negotiation">Negotiation</option>
+                                <option value="Won">Won</option>
+                                <option value="Lost">Lost</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Interaction Notes / Summary</label>
+                            <input type="text" id="sc-stage-notes" placeholder="e.g. Conducted demo for accounts team..." class="w-full text-xs p-2 bg-white border rounded">
+                        </div>
+                        <div id="sc-won-price-container" class="hidden">
+                            <label class="block text-xs font-bold text-emerald-800 mb-1">Final Won Deal Price (INR ₹) *</label>
+                            <input type="number" id="sc-won-price" min="0" step="1000" placeholder="e.g. 50000" class="w-full text-xs p-2 bg-white border border-emerald-400 rounded font-bold text-emerald-800">
+                        </div>
+                        <div class="md:col-span-3">
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded text-xs transition">
+                                Update Stage & Synchronize Standings →
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab 2: Direct Lead Intake (No Estimated Value) -->
+            <div id="sc-tab-direct" class="hidden bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+                <div class="border-b pb-3">
+                    <h3 class="text-base font-extrabold text-slate-900">➕ Log Direct Prospect Lead</h3>
+                    <p class="text-xs text-slate-500">Leads generated directly by you are allocated directly to your pipeline.</p>
+                </div>
+                <form id="sc-direct-form" onsubmit="handleScDirectSubmit(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Name of Company *</label>
+                                <input type="text" id="sc-d-company" required placeholder="e.g. Sunrise Polyesters" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Name of Person to Meet *</label>
+                                <input type="text" id="sc-d-person" required placeholder="e.g. Anish Shah" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Designation</label>
+                                <input type="text" id="sc-d-desig" placeholder="e.g. Commercial Manager" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Contact Number *</label>
+                                <input type="text" id="sc-d-phone" required placeholder="e.g. +91 98111 22334" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Product of Interest *</label>
+                                <select id="sc-d-product" required class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg font-semibold">
+                                    <option value="TallyPrime Silver/Gold">TallyPrime Silver/Gold</option>
+                                    <option value="Tally.ERP 9 Upgrade to Prime">Tally.ERP 9 Upgrade to Prime</option>
+                                    <option value="Tally Customization (TDL)">Tally Customization (TDL)</option>
+                                    <option value="Annual Maintenance Contract (AMC)">Annual Maintenance Contract (AMC)</option>
+                                    <option value="Tally on Cloud">Tally on Cloud</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase">Meeting Date</label>
+                                    <input type="date" id="sc-d-date" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 uppercase">Meeting Timings</label>
+                                    <input type="text" id="sc-d-time" placeholder="e.g. 03:00 PM" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase">Company / Meeting Address</label>
+                                <textarea id="sc-d-address" rows="3" placeholder="e.g. GIDC Industrial Estate, Sachin, Surat" class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Notes</label>
+                        <textarea id="sc-d-notes" rows="2" placeholder="e.g. Client looking for multi-user upgrade with customized invoice printing..." class="w-full text-xs p-2.5 bg-slate-50 border rounded-lg"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow text-xs">
+                        Save Directly to My Pipeline →
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tab 3: SC Standings in SC View -->
+            <div id="sc-tab-lb" class="hidden bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+                <h3 class="text-base font-extrabold text-slate-900">🏆 Sales Consultant Standings</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 uppercase font-black border-b border-slate-200">
+                                <th class="p-3">Sales Consultant</th>
+                                <th class="p-3">Total Assigned</th>
+                                <th class="p-3 text-emerald-700">Won</th>
+                                <th class="p-3 text-red-600">Not Interested</th>
+                                <th class="p-3">Win Rate (%)</th>
+                                <th class="p-3 text-right">Price on Win (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sc-view-standings-tbody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-4 text-center border-t border-slate-800 mt-auto">
+        <strong>VP INFO SOLUTIONS PVT LTD</strong> &bull; Tally Certified Partner &bull; Enterprise Edition v2.5
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // Storage Keys
+        const STORAGE_USERS = "vp_users";
+        const STORAGE_LEADS = "vp_leads";
+        const STORAGE_AUTH = "vp_auth";
+
+        // Initial Seed Data
+        const DEFAULT_USERS = [
+            { id: 1, full_name: "Rajesh Sharma", username: "admin", password: "admin123", role: "Admin", email: "admin@vpinfosolutions.com", phone: "+91 98200 11223", rm_id: null },
+            { id: 2, full_name: "Kiran Meda", username: "RM_Kiran", password: "rm123", role: "RM", email: "kiran.m@vpinfosolutions.com", phone: "+91 98450 12345", rm_id: null },
+            { id: 3, full_name: "Kiran M", username: "Sales_kiran", password: "sales123", role: "Sales Consultant", email: "kiran.sales@vpinfosolutions.com", phone: "+91 98450 67890", rm_id: 2 }
+        ];
+
+        const DEFAULT_LEADS = [
+            {
+                id: 1,
+                lead_number: "VP-2026-0001",
+                business_name: "Mahavir Engineering Works",
+                lead_name: "Suresh Jain",
+                designation: "Managing Director",
+                phone: "+91 98220 12345",
+                email: "suresh@mahavirengg.com",
+                address: "Plot 18, Phase 1, Hinjewadi IT Park, Pune",
+                meeting_date: "2026-11-20",
+                meeting_time: "11:30 AM",
+                interested_product: "TallyPrime Silver/Gold",
+                status: "Demo Scheduled",
+                estimated_value: 0.0,
+                notes: "Interested in multi-user gold license with barcoding customization.",
+                created_by_name: "Kiran Meda",
+                sales_person_id: 3,
+                sales_person_name: "Kiran M"
+            },
+            {
+                id: 2,
+                lead_number: "VP-2026-0002",
+                business_name: "Dynamic Auto Components",
+                lead_name: "Rajesh Gupta",
+                designation: "General Manager - Accounts",
+                phone: "+91 98111 55443",
+                email: "rgupta@dynamicauto.in",
+                address: "Sector 58, Industrial Area, Faridabad",
+                meeting_date: "2026-11-22",
+                meeting_time: "03:00 PM",
+                interested_product: "Tally on Cloud",
+                status: "Won",
+                estimated_value: 65000.0,
+                notes: "Closed 5-user cloud license for multiple factory locations.",
+                created_by_name: "Kiran Meda",
+                sales_person_id: 3,
+                sales_person_name: "Kiran M"
+            }
+        ];
+
+        // State Handlers
+        function loadState() {
+            if (!localStorage.getItem(STORAGE_USERS)) {
+                localStorage.setItem(STORAGE_USERS, JSON.stringify(DEFAULT_USERS));
+            }
+            if (!localStorage.getItem(STORAGE_LEADS)) {
+                localStorage.setItem(STORAGE_LEADS, JSON.stringify(DEFAULT_LEADS));
+            }
+        }
+        function getUsers() { return JSON.parse(localStorage.getItem(STORAGE_USERS) || "[]"); }
+        function saveUsers(u) { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
+        function getLeads() { return JSON.parse(localStorage.getItem(STORAGE_LEADS) || "[]"); }
+        function saveLeads(l) { localStorage.setItem(STORAGE_LEADS, JSON.stringify(l)); }
+        function getCurrentUser() { return JSON.parse(sessionStorage.getItem(STORAGE_AUTH) || "null"); }
+        function setCurrentUser(u) { sessionStorage.setItem(STORAGE_AUTH, JSON.stringify(u)); }
+
+        // Login Handler
+        function fillLogin(u, p) {
+            document.getElementById("login-username").value = u;
+            document.getElementById("login-password").value = p;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById("login-username").value.trim();
+            const p = document.getElementById("login-password").value.trim();
+            const users = getUsers();
+            const found = users.find(x => x.username.toLowerCase() === u.toLowerCase() && x.password === p);
+
+            if (found) {
+                setCurrentUser(found);
+                document.getElementById("login-error").classList.add("hidden");
+                renderApp();
+            } else {
+                const err = document.getElementById("login-error");
+                err.innerText = "Invalid username or password. Please use credentials above.";
+                err.classList.remove("hidden");
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem(STORAGE_AUTH);
+            renderApp();
+        }
+
+        // App Routing
+        function renderApp() {
+            loadState();
+            const user = getCurrentUser();
+            const loginSec = document.getElementById("login-section");
+            const adminSec = document.getElementById("admin-section");
+            const rmSec = document.getElementById("rm-section");
+            const scSec = document.getElementById("sc-section");
+            const userHeader = document.getElementById("user-header-info");
+
+            loginSec.classList.add("hidden");
+            adminSec.classList.add("hidden");
+            rmSec.classList.add("hidden");
+            scSec.classList.add("hidden");
+            userHeader.classList.add("hidden");
+
+            if (!user) {
+                loginSec.classList.remove("hidden");
+                return;
+            }
+
+            userHeader.classList.remove("hidden");
+            document.getElementById("header-user-name").innerText = user.full_name;
+            document.getElementById("header-user-email").innerText = user.email || user.username;
+            const roleEl = document.getElementById("header-user-role");
+            roleEl.innerText = user.role;
+            roleEl.className = "px-2.5 py-0.5 rounded-full text-xs font-black uppercase " + 
+                (user.role === "Admin" ? "badge-admin" : user.role === "RM" ? "badge-rm" : "badge-sc");
+
+            if (user.role === "Admin") {
+                adminSec.classList.remove("hidden");
+                renderAdminDashboard();
+            } else if (user.role === "RM") {
+                rmSec.classList.remove("hidden");
+                renderRmDashboard();
+            } else {
+                scSec.classList.remove("hidden");
+                renderScDashboard();
+            }
+        }
+
+        // --- ADMIN DASHBOARD ---
+        function switchAdminTab(t) {
+            document.getElementById("adm-tab-sc-standings").classList.add("hidden");
+            document.getElementById("adm-tab-rm-dash").classList.add("hidden");
+            document.getElementById("adm-tab-pending-assign").classList.add("hidden");
+            document.getElementById("adm-tab-user-mgmt").classList.add("hidden");
+
+            document.querySelectorAll(".tab-btn").forEach(b => {
+                b.classList.remove("border-amber-500", "text-slate-900");
+                b.classList.add("text-slate-500", "border-transparent");
+            });
+
+            const activeBtn = document.getElementById("tabbtn-" + t);
+            if (activeBtn) {
+                activeBtn.classList.remove("text-slate-500", "border-transparent");
+                activeBtn.classList.add("border-amber-500", "text-slate-900");
+            }
+            document.getElementById("adm-tab-" + t).classList.remove("hidden");
+        }
+
+        function renderAdminDashboard() {
+            const leads = getLeads();
+            const users = getUsers();
+            const scs = users.filter(u => u.role === "Sales Consultant" || u.role === "Sales Person");
+            const rms = users.filter(u => u.role === "RM");
+
+            // Filter year & month
+            const yearVal = document.getElementById("admin-year-filter").value;
+            const monthVal = document.getElementById("admin-month-filter").value;
+
+            let filtered = leads;
+            if (yearVal !== "All Years") {
+                filtered = filtered.filter(l => (l.meeting_date || "").startsWith(yearVal));
+            }
+            if (monthVal !== "All Months") {
+                const mStr = monthVal.padStart(2, "0");
+                filtered = filtered.filter(l => (l.meeting_date || "").includes("-" + mStr + "-"));
+            }
+
+            // KPIs
+            const total = filtered.length;
+            const won = filtered.filter(l => l.status === "Won").length;
+            const lost = filtered.filter(l => l.status === "Lost").length;
+            const open = total - won - lost;
+            const wonValue = filtered.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+            const winRate = total > 0 ? (won / total * 100).toFixed(1) : "0.0";
+
+            document.getElementById("adm-kpi-total").innerText = total;
+            document.getElementById("adm-kpi-won").innerText = won;
+            document.getElementById("adm-kpi-open").innerText = open;
+            document.getElementById("adm-kpi-value").innerText = "₹" + wonValue.toLocaleString("en-IN");
+            document.getElementById("adm-kpi-winrate").innerText = winRate + "%";
+
+            // SC Standings Table (Sales Consultant, Total Assigned, Won, Not Interested, Win Rate, Price on Win)
+            const scTbody = document.getElementById("sc-standings-tbody");
+            scTbody.innerHTML = "";
+
+            const scStats = scs.map(sc => {
+                const myLeads = filtered.filter(l => l.sales_person_id === sc.id);
+                const assigned = myLeads.length;
+                const scWon = myLeads.filter(l => l.status === "Won").length;
+                const scLost = myLeads.filter(l => l.status === "Lost").length;
+                const scRate = assigned > 0 ? (scWon / assigned * 100).toFixed(1) : "0.0";
+                const priceOnWin = myLeads.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+                return { sc, assigned, scWon, scLost, scRate, priceOnWin };
+            }).sort((a, b) => b.scWon - a.scWon || b.priceOnWin - a.priceOnWin);
+
+            if (scStats.length === 0) {
+                scTbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No Sales Consultants registered.</td></tr>`;
+            } else {
+                scStats.forEach(s => {
+                    scTbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition font-medium">
+                            <td class="p-3 font-bold text-slate-900">${s.sc.full_name}</td>
+                            <td class="p-3 font-semibold text-slate-700">${s.assigned}</td>
+                            <td class="p-3 font-bold text-emerald-700">${s.scWon}</td>
+                            <td class="p-3 font-bold text-red-600">${s.scLost}</td>
+                            <td class="p-3 font-bold text-indigo-700">${s.scRate}%</td>
+                            <td class="p-3 text-right font-black text-slate-900">₹${s.priceOnWin.toLocaleString("en-IN")}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // RM Leaderboard
+            const rmTbody = document.getElementById("rm-leaderboard-tbody");
+            rmTbody.innerHTML = "";
+            rms.forEach(rm => {
+                const raised = filtered.filter(l => l.created_by_name === rm.full_name).length;
+                const teamScs = scs.filter(s => s.rm_id === rm.id);
+                const teamScIds = teamScs.map(s => s.id);
+                const teamLeads = filtered.filter(l => teamScIds.includes(l.sales_person_id));
+                const teamWon = teamLeads.filter(l => l.status === "Won").length;
+                const conv = teamLeads.length > 0 ? (teamWon / teamLeads.length * 100).toFixed(1) + "%" : "0.0%";
+                const teamVal = teamLeads.reduce((acc, l) => acc + (Number(l.estimated_value) || 0), 0);
+
+                rmTbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition font-medium">
+                        <td class="p-3 font-bold text-slate-900">${rm.full_name}</td>
+                        <td class="p-3 font-semibold">${raised}</td>
+                        <td class="p-3 text-slate-600">${teamScs.length} Consultants</td>
+                        <td class="p-3 font-bold text-emerald-700">${teamWon}</td>
+                        <td class="p-3 font-bold text-blue-700">${conv}</td>
+                        <td class="p-3 text-right font-black text-slate-900">₹${teamVal.toLocaleString("en-IN")}</td>
+                    </tr>
+                `;
+            });
+
+            // Pending Leads Assignment
+            const unassigned = leads.filter(l => !l.sales_person_id);
+            document.getElementById("unassigned-badge-count").innerText = unassigned.length;
+            const unassignedDiv = document.getElementById("unassigned-leads-container");
+            unassignedDiv.innerHTML = "";
+
+            if (unassigned.length === 0) {
+                unassignedDiv.innerHTML = `<div class="p-6 text-center text-slate-400 bg-slate-50 rounded-lg">✅ All RM leads have been successfully assigned to Sales Consultants!</div>`;
+            } else {
+                unassigned.forEach(l => {
+                    const scOptions = scs.map(s => `<option value="${s.id}">${s.full_name} (${s.username})</option>`).join("");
+                    unassignedDiv.innerHTML += `
+                        <div class="border border-slate-200 bg-slate-50 p-4 rounded-xl flex flex-wrap justify-between items-center gap-4">
+                            <div>
+                                <div class="font-extrabold text-sm text-slate-900">🏢 ${l.business_name} <span class="text-xs font-mono bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold">${l.lead_number}</span></div>
+                                <div class="text-xs text-slate-600 mt-1">👤 ${l.lead_name} (${l.designation || 'N/A'}) &bull; 📞 ${l.phone} &bull; 📦 <strong>${l.interested_product}</strong></div>
+                                <div class="text-xs text-slate-500 mt-0.5">📅 ${l.meeting_date} at ${l.meeting_time} &bull; 👔 Raised by RM: <strong>${l.created_by_name}</strong></div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <select id="assign-sc-for-${l.id}" class="text-xs p-2 bg-white border border-slate-300 rounded font-semibold">
+                                    ${scOptions}
+                                </select>
+                                <button onclick="assignLeadByAdmin(${l.id})" class="text-xs bg-slate-900 hover:bg-amber-600 text-white font-bold px-4 py-2 rounded transition">
+                                    Assign to Consultant →
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // User Management Table
+            const userMgmtTbody = document.getElementById("user-mgmt-tbody");
+            userMgmtTbody.innerHTML = "";
+            users.forEach(u => {
+                const delBtn = u.role !== "Admin" ? `<button onclick="deleteUser(${u.id})" class="text-xs text-red-600 hover:underline font-bold">Remove</button>` : `<span class="text-xs text-slate-400">Locked</span>`;
+                userMgmtTbody.innerHTML += `
+                    <tr>
+                        <td class="p-2 font-bold text-slate-800">${u.full_name}</td>
+                        <td class="p-2"><span class="px-2 py-0.5 rounded text-xs font-bold ${u.role === 'Admin' ? 'badge-admin' : u.role === 'RM' ? 'badge-rm' : 'badge-sc'}">${u.role}</span></td>
+                        <td class="p-2 font-mono text-slate-600">${u.username}</td>
+                        <td class="p-2">${delBtn}</td>
+                    </tr>
+                `;
+            });
+
+            // Populate RM select for adding new SC
+            const rmSelect = document.getElementById("new-user-rmid");
+            rmSelect.innerHTML = rms.map(r => `<option value="${r.id}">${r.full_name} (${r.username})</option>`).join("");
+        }
+
+        function assignLeadByAdmin(leadId) {
+            const scId = Number(document.getElementById(`assign-sc-for-${leadId}`).value);
+            const users = getUsers();
+            const sc = users.find(u => u.id === scId);
+            const leads = getLeads();
+            const lead = leads.find(l => l.id === leadId);
+
+            if (lead && sc) {
+                lead.sales_person_id = sc.id;
+                lead.sales_person_name = sc.full_name;
+                saveLeads(leads);
+                alert(`Lead ${lead.lead_number} assigned to Sales Consultant ${sc.full_name}!`);
+                renderAdminDashboard();
+            }
+        }
+
+        let currentAddType = "RM";
+        function setAddUserType(t) {
+            currentAddType = t;
+            if (t === "RM") {
+                document.getElementById("btn-add-rm-type").className = "px-3 py-1 text-xs font-bold bg-sky-100 text-sky-800 rounded";
+                document.getElementById("btn-add-sc-type").className = "px-3 py-1 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded";
+                document.getElementById("sc-rm-select-container").classList.add("hidden");
+            } else {
+                document.getElementById("btn-add-sc-type").className = "px-3 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded";
+                document.getElementById("btn-add-rm-type").className = "px-3 py-1 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded";
+                document.getElementById("sc-rm-select-container").classList.remove("hidden");
+            }
+        }
+
+        function handleAddUser(e) {
+            e.preventDefault();
+            const users = getUsers();
+            const name = document.getElementById("new-user-fullname").value.trim();
+            const username = document.getElementById("new-user-username").value.trim();
+            const password = document.getElementById("new-user-password").value.trim();
+            const email = document.getElementById("new-user-email").value.trim();
+            const phone = document.getElementById("new-user-phone").value.trim();
+            const rmId = currentAddType === "SC" ? Number(document.getElementById("new-user-rmid").value) : null;
+
+            if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
+                alert("Username already exists. Please choose a different username.");
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                full_name: name,
+                username: username,
+                password: password,
+                role: currentAddType === "RM" ? "RM" : "Sales Consultant",
+                email: email,
+                phone: phone,
+                rm_id: rmId
+            };
+            users.push(newUser);
+            saveUsers(users);
+            alert(`${newUser.role} "${name}" registered successfully!`);
+            document.getElementById("add-user-form").reset();
+            renderAdminDashboard();
+        }
+
+        function deleteUser(uid) {
+            if (confirm("Are you sure you want to permanently remove this user account?")) {
+                let users = getUsers();
+                users = users.filter(u => u.id !== uid);
+                saveUsers(users);
+                renderAdminDashboard();
+            }
+        }
+
+        // --- RELATIONSHIP MANAGER (RM) WORKSPACE ---
+        function renderRmDashboard() {
+            const user = getCurrentUser();
+            const leads = getLeads();
+            const myLeads = leads.filter(l => l.created_by_name === user.full_name);
+            document.getElementById("rm-next-lead-num").innerText = `VP-2026-${String(leads.length + 1).padStart(4, "0")}`;
+
+            const tbody = document.getElementById("rm-my-leads-tbody");
+            tbody.innerHTML = "";
+            if (myLeads.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">You haven't logged any prospect meetings yet.</td></tr>`;
+            } else {
+                myLeads.forEach(l => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="p-2.5 font-bold font-mono text-slate-900">${l.lead_number}</td>
+                            <td class="p-2.5 font-bold text-slate-800">${l.business_name}</td>
+                            <td class="p-2.5">${l.lead_name}</td>
+                            <td class="p-2.5 font-semibold text-amber-700">${l.interested_product}</td>
+                            <td class="p-2.5">${l.meeting_date} (${l.meeting_time})</td>
+                            <td class="p-2.5"><span class="px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-700">${l.status}</span></td>
+                            <td class="p-2.5 font-semibold text-blue-700">${l.sales_person_name || 'Pending Admin Assignment'}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function handleRmLeadSubmit(e) {
+            e.preventDefault();
+            const user = getCurrentUser();
+            const leads = getLeads();
+            const nextNum = `VP-2026-${String(leads.length + 1).padStart(4, "0")}`;
+
+            const newLead = {
+                id: Date.now(),
+                lead_number: nextNum,
+                business_name: document.getElementById("rm-company").value.trim(),
+                lead_name: document.getElementById("rm-person").value.trim(),
+                designation: document.getElementById("rm-desig").value.trim(),
+                phone: document.getElementById("rm-phone").value.trim(),
+                email: document.getElementById("rm-email").value.trim(),
+                interested_product: document.getElementById("rm-product").value,
+                meeting_date: document.getElementById("rm-date").value,
+                meeting_time: document.getElementById("rm-time").value.trim(),
+                address: document.getElementById("rm-address").value.trim(),
+                notes: document.getElementById("rm-notes").value.trim(),
+                status: "New",
+                estimated_value: 0.0,
+                created_by_name: user.full_name,
+                sales_person_id: null,
+                sales_person_name: null
+            };
+
+            leads.push(newLead);
+            saveLeads(leads);
+            alert(`Lead ${nextNum} submitted successfully! Routed to Admin for assignment.`);
+            document.getElementById("rm-lead-form").reset();
+            renderRmDashboard();
+        }
+
+        // --- SALES CONSULTANT (SC) WORKSPACE ---
+        function switchScTab(t) {
+            document.getElementById("sc-tab-pipeline").classList.add("hidden");
+            document.getElementById("sc-tab-direct").classList.add("hidden");
+            document.getElementById("sc-tab-lb").classList.add("hidden");
+
+            document.querySelectorAll(".tab-btn").forEach(b => {
+                b.classList.remove("border-emerald-600", "text-slate-900");
+                b.classList.add("text-slate-500", "border-transparent");
+            });
+
+            const btn = document.getElementById("tabbtn-sc-" + (t === "assigned-pipeline" ? "pipeline" : t === "direct-lead" ? "direct" : "lb"));
+            if (btn) {
+                btn.classList.remove("text-slate-500", "border-transparent");
+                btn.classList.add("border-emerald-600", "text-slate-900");
+            }
+            document.getElementById("sc-tab-" + (t === "assigned-pipeline" ? "pipeline" : t === "direct-lead" ? "direct" : "lb")).classList.remove("hidden");
+        }
+
+        function renderScDashboard() {
+            const user = getCurrentUser();
+            const leads = getLeads();
+            const myAssigned = leads.filter(l => l.sales_person_id === user.id);
+
+            // Table of all details entered by RM
+            const tbody = document.getElementById("sc-assigned-tbody");
+            tbody.innerHTML = "";
+            const selectEl = document.getElementById("sc-selected-lead");
+            selectEl.innerHTML = "";
+
+            if (myAssigned.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-slate-400">No leads currently assigned to you.</td></tr>`;
+                document.getElementById("sc-dossier-card").classList.add("hidden");
+            } else {
+                myAssigned.forEach((l, idx) => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="p-2.5 font-bold font-mono text-slate-900">${l.lead_number}</td>
+                            <td class="p-2.5 font-bold text-slate-800">${l.business_name}</td>
+                            <td class="p-2.5 font-semibold">${l.lead_name}</td>
+                            <td class="p-2.5 text-slate-600">${l.designation || 'N/A'}</td>
+                            <td class="p-2.5 font-mono text-blue-700">${l.phone}</td>
+                            <td class="p-2.5">${l.meeting_date} (${l.meeting_time})</td>
+                            <td class="p-2.5 font-semibold text-amber-700">${l.interested_product}</td>
+                            <td class="p-2.5"><span class="px-2 py-0.5 rounded text-xs font-bold ${l.status === 'Won' ? 'bg-emerald-100 text-emerald-800' : l.status === 'Lost' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}">${l.status}</span></td>
+                            <td class="p-2.5 text-slate-600 font-bold">${l.created_by_name || 'Direct'}</td>
+                            <td class="p-2.5 text-slate-500 max-w-xs truncate">${l.address || 'N/A'}</td>
+                        </tr>
+                    `;
+                    selectEl.innerHTML += `<option value="${l.id}">#${l.lead_number} — ${l.business_name} (${l.lead_name}) [Current: ${l.status}]</option>`;
+                });
+                renderScDossier();
+            }
+
+            // Standings table in SC View (Sales Consultant, Total Assigned, Won, Not Interested, Win Rate, Price on Win)
+            const users = getUsers();
+            const scs = users.filter(u => u.role === "Sales Consultant" || u.role === "Sales Person");
+            const scLbTbody = document.getElementById("sc-view-standings-tbody");
+            scLbTbody.innerHTML = "";
+
+            scs.map(sc => {
+                const scLeads = leads.filter(l => l.sales_person_id === sc.id);
+                const assigned = scLeads.length;
+                const scWon = scLeads.filter(l => l.status === "Won").length;
+                const scLost = scLeads.filter(l => l.status === "Lost").length;
+                const scRate = assigned > 0 ? (scWon / assigned * 100).toFixed(1) : "0.0";
+                const priceOnWin = scLeads.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+                return { sc, assigned, scWon, scLost, scRate, priceOnWin };
+            }).sort((a, b) => b.scWon - a.scWon || b.priceOnWin - a.priceOnWin).forEach(s => {
+                scLbTbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition font-medium">
+                        <td class="p-3 font-bold text-slate-900">${s.sc.full_name}</td>
+                        <td class="p-3 font-semibold text-slate-700">${s.assigned}</td>
+                        <td class="p-3 font-bold text-emerald-700">${s.scWon}</td>
+                        <td class="p-3 font-bold text-red-600">${s.scLost}</td>
+                        <td class="p-3 font-bold text-indigo-700">${s.scRate}%</td>
+                        <td class="p-3 text-right font-black text-slate-900">₹${s.priceOnWin.toLocaleString("en-IN")}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderScDossier() {
+            const leadId = Number(document.getElementById("sc-selected-lead").value);
+            const leads = getLeads();
+            const lead = leads.find(l => l.id === leadId);
+            const card = document.getElementById("sc-dossier-card");
+
+            if (!lead) {
+                card.classList.add("hidden");
+                return;
+            }
+
+            card.classList.remove("hidden");
+            card.innerHTML = `
+                <div class="flex justify-between items-center border-b pb-2">
+                    <div class="font-black text-base text-slate-900">🏢 ${lead.business_name} <span class="text-xs font-mono bg-blue-100 text-blue-800 px-2 py-0.5 rounded">${lead.lead_number}</span></div>
+                    <div class="text-xs text-sky-800 font-bold bg-sky-100 px-2 py-0.5 rounded">👔 Generated by RM: ${lead.created_by_name || 'Direct'}</div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mt-2">
+                    <div>
+                        <div class="text-slate-400 font-bold uppercase">👤 Person to Meet</div>
+                        <div class="font-extrabold text-slate-900 text-sm mt-0.5">${lead.lead_name}</div>
+                        <div class="text-slate-500">${lead.designation || 'N/A'}</div>
+                    </div>
+                    <div>
+                        <div class="text-slate-400 font-bold uppercase">📅 Meeting Schedule</div>
+                        <div class="font-extrabold text-slate-900 text-sm mt-0.5">${lead.meeting_date}</div>
+                        <div class="text-blue-600 font-semibold">${lead.meeting_time}</div>
+                    </div>
+                    <div>
+                        <div class="text-slate-400 font-bold uppercase">📞 Contact Info</div>
+                        <div class="font-bold text-slate-800 mt-0.5">${lead.phone}</div>
+                        <div class="text-slate-500">${lead.email || 'No email provided'}</div>
+                    </div>
+                    <div>
+                        <div class="text-slate-400 font-bold uppercase">📦 Interested Product</div>
+                        <div class="font-black text-amber-700 text-sm mt-0.5">${lead.interested_product}</div>
+                        <div class="text-xs text-slate-600 font-semibold">Stage: ${lead.status}</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-2 border-t mt-2">
+                    <div>
+                        <div class="text-slate-500 font-bold uppercase">📍 Company / Meeting Address (From RM)</div>
+                        <div class="bg-white p-2 rounded border border-slate-200 mt-1 text-slate-700">${lead.address || 'Address not recorded'}</div>
+                    </div>
+                    <div>
+                        <div class="text-slate-500 font-bold uppercase">📝 Requirement Notes (Entered by RM)</div>
+                        <div class="bg-white p-2 rounded border border-slate-200 mt-1 text-slate-700 italic">${lead.notes || 'No initial notes recorded'}</div>
+                    </div>
+                </div>
+            `;
+
+            // Preset stage select
+            document.getElementById("sc-new-stage").value = lead.status;
+            toggleWonPriceInput();
+        }
+
+        function toggleWonPriceInput() {
+            const st = document.getElementById("sc-new-stage").value;
+            const container = document.getElementById("sc-won-price-container");
+            if (st === "Won") {
+                container.classList.remove("hidden");
+            } else {
+                container.classList.add("hidden");
+            }
+        }
+
+        function handleScStageUpdate(e) {
+            e.preventDefault();
+            const leadId = Number(document.getElementById("sc-selected-lead").value);
+            const newStage = document.getElementById("sc-new-stage").value;
+            const notes = document.getElementById("sc-stage-notes").value.trim();
+            const leads = getLeads();
+            const lead = leads.find(l => l.id === leadId);
+
+            if (!lead) return;
+
+            lead.status = newStage;
+            if (newStage === "Won") {
+                const wonPrice = Number(document.getElementById("sc-won-price").value) || 0;
+                lead.estimated_value = wonPrice;
+            }
+            if (notes) {
+                lead.notes = `${lead.notes || ''}\n[${newStage}]: ${notes}`.trim();
+            }
+
+            saveLeads(leads);
+            alert(`Lead ${lead.lead_number} stage progressed to "${newStage}"!`);
+            document.getElementById("sc-stage-notes").value = "";
+            renderScDashboard();
+        }
+
+        function handleScDirectSubmit(e) {
+            e.preventDefault();
+            const user = getCurrentUser();
+            const leads = getLeads();
+            const nextNum = `VP-2026-${String(leads.length + 1).padStart(4, "0")}`;
+
+            const newLead = {
+                id: Date.now(),
+                lead_number: nextNum,
+                business_name: document.getElementById("sc-d-company").value.trim(),
+                lead_name: document.getElementById("sc-d-person").value.trim(),
+                designation: document.getElementById("sc-d-desig").value.trim(),
+                phone: document.getElementById("sc-d-phone").value.trim(),
+                email: "",
+                interested_product: document.getElementById("sc-d-product").value,
+                meeting_date: document.getElementById("sc-d-date").value,
+                meeting_time: document.getElementById("sc-d-time").value.trim(),
+                address: document.getElementById("sc-d-address").value.trim(),
+                notes: document.getElementById("sc-d-notes").value.trim(),
+                status: "New",
+                estimated_value: 0.0,
+                created_by_name: user.full_name,
+                sales_person_id: user.id,
+                sales_person_name: user.full_name
+            };
+
+            leads.push(newLead);
+            saveLeads(leads);
+            alert(`Direct Lead ${nextNum} saved to your pipeline!`);
+            document.getElementById("sc-direct-form").reset();
+            switchScTab("assigned-pipeline");
+            renderScDashboard();
+        }
+
+        // Initialize on page load
+        window.addEventListener("DOMContentLoaded", renderApp);
+    </script>
 </body>
 </html>
