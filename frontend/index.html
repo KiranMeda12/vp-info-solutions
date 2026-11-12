@@ -63,14 +63,14 @@
                 <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl">
                     <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">⚡ Quick 1-Click Master Sign In:</div>
                     <div class="grid grid-cols-1 gap-1.5">
-                        <button onclick="fillLogin('admin', 'admin123')" class="w-full text-left text-xs bg-purple-50 hover:bg-purple-100 text-purple-900 font-semibold px-3 py-1.5 rounded border border-purple-200 transition">
-                            👑 <strong>Admin View</strong> (admin / admin123)
+                        <button onclick="fillLogin('VP Info solutions', 'vpinfo@123')" class="w-full text-left text-xs bg-purple-50 hover:bg-purple-100 text-purple-900 font-semibold px-3 py-1.5 rounded border border-purple-200 transition">
+                            👑 <strong>Admin View</strong> (VP Info solutions / vpinfo@123)
                         </button>
-                        <button onclick="fillLogin('RM_Kiran', 'rm123')" class="w-full text-left text-xs bg-sky-50 hover:bg-sky-100 text-sky-900 font-semibold px-3 py-1.5 rounded border border-sky-200 transition">
-                            👔 <strong>Relationship Manager (RM)</strong> (RM_Kiran / rm123)
+                        <button onclick="fillLogin('RM_Kalyani', 'vpinfo@123')" class="w-full text-left text-xs bg-sky-50 hover:bg-sky-100 text-sky-900 font-semibold px-3 py-1.5 rounded border border-sky-200 transition">
+                            👔 <strong>Relationship Manager (RM)</strong> (RM_Kalyani / vpinfo@123)
                         </button>
-                        <button onclick="fillLogin('Sales_kiran', 'sales123')" class="w-full text-left text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-semibold px-3 py-1.5 rounded border border-emerald-200 transition">
-                            🎯 <strong>Sales Consultant (SC)</strong> (Sales_kiran / sales123)
+                        <button onclick="fillLogin('SC_Kiran', 'Kiran@2003')" class="w-full text-left text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-semibold px-3 py-1.5 rounded border border-emerald-200 transition">
+                            🎯 <strong>Sales Consultant (SC)</strong> (SC_Kiran / Kiran@2003)
                         </button>
                     </div>
                 </div>
@@ -922,22 +922,27 @@
 
         // Initial Seed Data (Fallback)
         const DEFAULT_USERS = [
-            { id: 1, full_name: "Rajesh Sharma", username: "admin", password: "admin123", role: "Admin", email: "admin@vpinfosolutions.com", phone: "+91 98200 11223", rm_id: null },
-            { id: 2, full_name: "Kiran Meda", username: "RM_Kiran", password: "rm123", role: "RM", email: "kiran.m@vpinfosolutions.com", phone: "+91 98450 12345", rm_id: null },
-            { id: 3, full_name: "Kiran M", username: "Sales_kiran", password: "sales123", role: "Sales Consultant", email: "kiran.sales@vpinfosolutions.com", phone: "+91 98450 67890", rm_id: 2 }
+            { id: 1, full_name: "VP Info Solutions", username: "VP Info solutions", password: "vpinfo@123", role: "Admin", email: "admin@vpinfosolutions.com", phone: "+91 98200 11223", rm_id: null },
+            { id: 2, full_name: "Kalyani", username: "RM_Kalyani", password: "vpinfo@123", role: "RM", email: "kalyani@vpinfosolutions.com", phone: "+91 98450 12345", rm_id: null },
+            { id: 3, full_name: "Kiran M", username: "SC_Kiran", password: "Kiran@2003", role: "Sales Consultant", email: "kiran.sales@vpinfosolutions.com", phone: "+91 98450 67890", rm_id: 2 }
         ];
 
         const DEFAULT_LEADS = [];
 
         // State Handlers
         function loadState() {
-            if (!localStorage.getItem(STORAGE_USERS)) {
+            // Ensure newly updated credentials sync immediately on all devices
+            if (!localStorage.getItem("vp_users_version_v7")) {
+                localStorage.setItem(STORAGE_USERS, JSON.stringify(DEFAULT_USERS));
+                localStorage.setItem("vp_users_version_v7", "true");
+            } else if (!localStorage.getItem(STORAGE_USERS)) {
                 localStorage.setItem(STORAGE_USERS, JSON.stringify(DEFAULT_USERS));
             }
+
             // Clear past test leads as requested by user
-            if (!localStorage.getItem("vp_leads_cleared_v5")) {
+            if (!localStorage.getItem("vp_leads_cleared_v7")) {
                 localStorage.setItem(STORAGE_LEADS, JSON.stringify([]));
-                localStorage.setItem("vp_leads_cleared_v5", "true");
+                localStorage.setItem("vp_leads_cleared_v7", "true");
             } else if (!localStorage.getItem(STORAGE_LEADS)) {
                 localStorage.setItem(STORAGE_LEADS, JSON.stringify([]));
             }
