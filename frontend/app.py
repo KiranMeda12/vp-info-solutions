@@ -270,6 +270,8 @@ PRODUCT_OPTIONS = [
     "Tally on Cloud",
     "Tally Server 9",
     "Tally API & ERP Integration",
+    "Service",
+    "Services",
 ]
 INDUSTRY_OPTIONS = [
     "Manufacturing",
