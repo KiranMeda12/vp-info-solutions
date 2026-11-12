@@ -1512,6 +1512,9 @@
                                     <button onclick="reassignLeadByAdmin(${l.id})" class="w-full text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
                                         <span>🔄</span> Reassign Lead →
                                     </button>
+                                    <button onclick="deleteLeadByAdmin(${l.id})" class="w-full text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 hover:border-red-300 font-bold py-1.5 rounded transition flex items-center justify-center gap-1 cursor-pointer" title="Permanently delete lead">
+                                        <span>🗑️</span> Remove Lead
+                                    </button>
                                 </div>
                             </div>
                         `;
@@ -1540,6 +1543,9 @@
                                 </select>
                                 <button onclick="assignLeadByAdmin(${l.id})" class="text-xs bg-slate-900 hover:bg-amber-600 text-white font-bold px-4 py-2 rounded transition cursor-pointer">
                                     Assign to Consultant →
+                                </button>
+                                <button onclick="deleteLeadByAdmin(${l.id})" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 hover:border-red-300 font-bold px-3 py-2 rounded transition cursor-pointer" title="Permanently delete lead">
+                                    🗑️ Remove
                                 </button>
                             </div>
                         </div>
@@ -2249,6 +2255,11 @@
                                 <span>Current Status: <strong class="underline decoration-current">${displayStatus}</strong></span>
                             </span>
                             ${lead.status === 'Won' ? `<span class="text-xs font-black text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Price on Win: ₹${estVal.toLocaleString("en-IN")}</span>` : ''}
+                            ${(getCurrentUser() && getCurrentUser().role === "Admin") ? `
+                                <button type="button" onclick="deleteLeadByAdmin(${lead.id})" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 hover:border-red-300 font-bold px-2.5 py-1 rounded transition flex items-center gap-1 cursor-pointer" title="Permanently delete lead across all accounts">
+                                    <span>🗑️</span> <span>Remove Lead</span>
+                                </button>
+                            ` : ''}
                         </div>
                     </div>
 
@@ -2332,6 +2343,9 @@
                                 </select>
                                 <button type="button" onclick="reassignLeadByAdmin(${lead.id}, 'card-reassign-sc-${lead.id}')" class="text-xs bg-slate-900 hover:bg-amber-600 text-white font-bold px-3 py-1.5 rounded transition cursor-pointer">
                                     Reassign →
+                                </button>
+                                <button type="button" onclick="deleteLeadByAdmin(${lead.id})" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 hover:border-red-300 font-bold px-2.5 py-1.5 rounded transition cursor-pointer" title="Permanently delete lead across all accounts">
+                                    🗑️ Remove
                                 </button>
                             </div>
                         </div>
@@ -2657,6 +2671,41 @@
             }
         }
 
+        async function deleteLeadByAdmin(leadId) {
+            const leads = getLeads();
+            const lead = leads.find(l => l.id === Number(leadId));
+            if (!lead) return;
+
+            const confirmMsg = `Are you sure you want to permanently delete Lead #${lead.lead_number} (${lead.business_name})?\n\n⚠️ This will permanently remove it from Admin view, Sales Consultant view, and Relationship Manager view across ALL devices.`;
+            if (!confirm(confirmMsg)) return;
+
+            const updatedLeads = leads.filter(l => l.id !== Number(leadId));
+            saveLeads(updatedLeads);
+            await pushToCloud(updatedLeads);
+
+            alert(`Lead #${lead.lead_number} (${lead.business_name}) has been permanently deleted across all devices.`);
+
+            renderAdminDashboard();
+
+            if (currentSelectedScId) {
+                const scModal = document.getElementById("sc-leads-modal");
+                if (scModal && !scModal.classList.contains("hidden")) {
+                    renderScModalLeads();
+                }
+                const scInline = document.getElementById("sc-standings-inline-details");
+                if (scInline && !scInline.classList.contains("hidden")) {
+                    renderScInlineDetails(currentSelectedScId);
+                }
+            }
+
+            if (currentSelectedRmId) {
+                const rmModal = document.getElementById("rm-leads-modal");
+                if (rmModal && !rmModal.classList.contains("hidden")) {
+                    renderRmModalLeads();
+                }
+            }
+        }
+
         function filterActiveReassignLeads() {
             renderActiveReassignLeads();
         }
@@ -2714,6 +2763,9 @@
                             </select>
                             <button onclick="reassignLeadByAdmin(${l.id}, 'reassign-any-for-${l.id}')" class="text-xs bg-slate-800 hover:bg-amber-600 text-white font-bold px-3 py-1.5 rounded transition cursor-pointer">
                                 Reassign →
+                            </button>
+                            <button onclick="deleteLeadByAdmin(${l.id})" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 hover:border-red-300 font-bold px-2.5 py-1.5 rounded transition cursor-pointer" title="Permanently delete lead">
+                                🗑️ Remove
                             </button>
                         </div>
                     </div>
