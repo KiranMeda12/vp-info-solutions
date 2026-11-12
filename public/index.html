@@ -242,7 +242,13 @@
             <!-- Subtab 2: RM Dashboard -->
             <div id="adm-tab-rm-dash" class="hidden space-y-4">
                 <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                    <h3 class="text-base font-extrabold text-slate-900 mb-3">👔 Relationship Managers (RM) Overview & Leaderboard</h3>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                            <span>👔 Relationship Managers (RM) Overview & Leaderboard</span>
+                            <span class="text-[11px] font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full">Click Name for Generated Leads</span>
+                        </h3>
+                        <span class="text-xs font-normal text-slate-500">Track sourced prospect leads & sales conversion progress</span>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
@@ -791,6 +797,48 @@
             </div>
         </div>
 
+        <!-- Modal: Relationship Manager Generated Leads & Full Details -->
+        <div id="rm-leads-modal" onclick="if(event.target === this) closeRmGeneratedLeadsModal()" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6 transition-all">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+                <!-- Modal Header -->
+                <div class="p-5 border-b border-slate-200 bg-sky-50/70 flex items-start justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">👔</span>
+                            <h3 id="rm-modal-title" class="text-lg font-black text-slate-900">Relationship Manager Generated Leads</h3>
+                        </div>
+                        <p id="rm-modal-subtitle" class="text-xs text-slate-600 mt-1 font-medium"></p>
+                        <div id="rm-modal-summary" class="mt-3"></div>
+                    </div>
+                    <button type="button" onclick="closeRmGeneratedLeadsModal()" title="Close (Esc)" class="text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg p-2 transition text-sm font-bold leading-none cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Modal Search / Filter -->
+                <div class="px-5 py-3 border-b border-slate-100 bg-white flex items-center justify-between gap-3">
+                    <div class="relative flex-1">
+                        <input type="text" id="rm-modal-search" oninput="filterRmModalLeads()" placeholder="Search leads by company, person, assigned SC, product, status, or lead #..." class="w-full text-xs p-2.5 pl-8 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                        <span class="absolute left-2.5 top-2.5 text-slate-400 text-xs">🔍</span>
+                    </div>
+                    <span id="rm-modal-count-badge" class="text-xs font-bold text-slate-500 whitespace-nowrap"></span>
+                </div>
+
+                <!-- Modal Body (Scrollable) -->
+                <div id="rm-modal-leads-container" class="p-5 overflow-y-auto space-y-4 max-h-[60vh] bg-slate-50/50">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                    <span class="text-xs text-slate-500 italic">Showing all prospect leads sourced by this Relationship Manager and current sales conversion progress</span>
+                    <button type="button" onclick="closeRmGeneratedLeadsModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition cursor-pointer">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Modal: Download Reports (Excel & PDF) -->
         <div id="download-reports-modal" onclick="if(event.target === this) closeDownloadReportsModal()" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6 transition-all">
             <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full flex flex-col overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
@@ -1275,12 +1323,15 @@
                 });
             }
 
-            // If an inline details view is currently open, refresh it with latest data
+            // If an inline details view or modals are currently open, refresh them with latest data
             if (currentSelectedScId && !document.getElementById("sc-standings-inline-details").classList.contains("hidden")) {
                 renderScInlineDetails(currentSelectedScId);
             }
             if (currentSelectedScId && document.getElementById("sc-leads-modal") && !document.getElementById("sc-leads-modal").classList.contains("hidden")) {
                 renderScModalLeads();
+            }
+            if (currentSelectedRmId && document.getElementById("rm-leads-modal") && !document.getElementById("rm-leads-modal").classList.contains("hidden")) {
+                renderRmModalLeads();
             }
 
             // RM Leaderboard
@@ -1296,10 +1347,15 @@
                 const teamVal = teamLeads.reduce((acc, l) => acc + (Number(l.estimated_value) || 0), 0);
 
                 rmTbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition font-medium">
-                        <td class="p-3 font-bold text-slate-900">${rm.full_name}</td>
-                        <td class="p-3 font-semibold">${raised}</td>
-                        <td class="p-3 text-slate-600">${teamScs.length} Consultants</td>
+                    <tr class="hover:bg-sky-50/40 transition font-medium">
+                        <td class="p-3">
+                            <button type="button" onclick="openRmGeneratedLeadsModal(${rm.id})" class="text-left font-bold text-sky-700 hover:text-sky-900 hover:underline flex items-center gap-1.5 group cursor-pointer">
+                                <span class="text-xs sm:text-sm font-black">${rm.full_name}</span>
+                                <span class="text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200 px-1.5 py-0.5 rounded group-hover:bg-sky-600 group-hover:text-white transition">View Raised (${raised}) 🔍</span>
+                            </button>
+                        </td>
+                        <td class="p-3 font-semibold text-slate-800">${raised}</td>
+                        <td class="p-3 text-slate-600 font-medium">${teamScs.length} Consultants</td>
                         <td class="p-3 font-bold text-emerald-700">${teamWon}</td>
                         <td class="p-3 font-bold text-blue-700">${conv}</td>
                         <td class="p-3 text-right font-black text-slate-900">₹${teamVal.toLocaleString("en-IN")}</td>
@@ -1526,8 +1582,13 @@
                         const winRate = scLeads.length > 0 ? (totalWon / scLeads.length * 100).toFixed(1) : "0.0";
 
                         scMatrixTbody.innerHTML += `
-                            <tr class="hover:bg-slate-50 transition font-medium">
-                                <td class="p-3 font-bold text-slate-900">${sc.full_name}</td>
+                            <tr class="hover:bg-amber-50/40 transition font-medium">
+                                <td class="p-3">
+                                    <button type="button" onclick="openScAssignedLeadsModal(${sc.id})" class="text-left font-bold text-blue-600 hover:text-blue-900 hover:underline flex items-center gap-1 group cursor-pointer">
+                                        <span class="text-xs font-black">${sc.full_name}</span>
+                                        <span class="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 px-1 py-0.5 rounded group-hover:bg-blue-600 group-hover:text-white transition">🔍</span>
+                                    </button>
+                                </td>
                                 <td class="p-3"><strong>${qBreakdown[0].won}</strong> won <span class="text-slate-400">/ ${qBreakdown[0].total}</span> <div class="text-[11px] text-emerald-700 font-semibold">₹${qBreakdown[0].rev.toLocaleString("en-IN")}</div></td>
                                 <td class="p-3"><strong>${qBreakdown[1].won}</strong> won <span class="text-slate-400">/ ${qBreakdown[1].total}</span> <div class="text-[11px] text-emerald-700 font-semibold">₹${qBreakdown[1].rev.toLocaleString("en-IN")}</div></td>
                                 <td class="p-3"><strong>${qBreakdown[2].won}</strong> won <span class="text-slate-400">/ ${qBreakdown[2].total}</span> <div class="text-[11px] text-emerald-700 font-semibold">₹${qBreakdown[2].rev.toLocaleString("en-IN")}</div></td>
@@ -1552,8 +1613,13 @@
                         const totalRmSourced = rmLeads.length;
 
                         rmMatrixTbody.innerHTML += `
-                            <tr class="hover:bg-slate-50 transition font-medium">
-                                <td class="p-3 font-bold text-slate-900">${rm.full_name}</td>
+                            <tr class="hover:bg-sky-50/40 transition font-medium">
+                                <td class="p-3">
+                                    <button type="button" onclick="openRmGeneratedLeadsModal(${rm.id})" class="text-left font-bold text-sky-700 hover:text-sky-900 hover:underline flex items-center gap-1 group cursor-pointer">
+                                        <span class="text-xs font-black">${rm.full_name}</span>
+                                        <span class="text-[10px] bg-sky-50 text-sky-700 border border-sky-200 px-1 py-0.5 rounded group-hover:bg-sky-600 group-hover:text-white transition">🔍</span>
+                                    </button>
+                                </td>
                                 <td class="p-3 font-semibold text-slate-700">${qSourced[0]} leads</td>
                                 <td class="p-3 font-semibold text-slate-700">${qSourced[1]} leads</td>
                                 <td class="p-3 font-semibold text-slate-700">${qSourced[2]} leads</td>
@@ -1989,10 +2055,11 @@
             }
         }
 
-        // Sales Consultant Assigned Leads Drill-down (Modal & Inline Details)
+        // Sales Consultant & Relationship Manager Leads Drill-down
         let currentSelectedScId = null;
+        let currentSelectedRmId = null;
 
-        function renderLeadCardHtml(lead, idx) {
+        function renderLeadCardHtml(lead, idx, roleView = "ALL") {
             const statusColor = 
                 lead.status === "Won" ? "bg-emerald-100 text-emerald-800 border-emerald-300" :
                 lead.status === "Lost" ? "bg-red-100 text-red-800 border-red-300" :
@@ -2008,8 +2075,10 @@
                 lead.status === "Negotiation" ? "🤝" :
                 lead.status === "Contacted" ? "📞" : "✨";
 
-            const displayStatus = lead.status === "Lost" ? "Not Interested" : lead.status;
+            const displayStatus = lead.status === "Lost" ? "Not Interested" : (lead.status || "Open / Unassigned");
             const estVal = Number(lead.estimated_value) || 0;
+            const isAssigned = !!lead.sales_person_id;
+            const scName = lead.sales_person_name || "Pending Admin Assignment";
 
             return `
                 <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-400 transition space-y-3">
@@ -2019,9 +2088,9 @@
                             <h4 class="font-extrabold text-base text-slate-900">🏢 ${lead.business_name}</h4>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-full border ${statusColor} flex items-center gap-1 shadow-xs">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full border ${statusColor} flex items-center gap-1.5 shadow-xs">
                                 <span>${statusIcon}</span>
-                                <span>${displayStatus}</span>
+                                <span>Current Status: <strong class="underline decoration-current">${displayStatus}</strong></span>
                             </span>
                             ${lead.status === 'Won' ? `<span class="text-xs font-black text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Price on Win: ₹${estVal.toLocaleString("en-IN")}</span>` : ''}
                         </div>
@@ -2059,9 +2128,16 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                         <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">📦 Interested Product & Source</div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">📦 Product & Assignment</div>
                             <div class="font-black text-amber-800 text-sm mt-0.5">${lead.interested_product || 'General / Not specified'}</div>
-                            <div class="text-[11px] text-slate-600 mt-1">👔 Generated by: <strong class="text-slate-800">${lead.created_by_name || 'Direct Lead'}</strong></div>
+                            <div class="text-[11px] text-slate-600 mt-1.5 flex items-center gap-1">
+                                <span>👔 Raised by RM:</span>
+                                <strong class="text-slate-900">${lead.created_by_name || 'Direct Lead'}</strong>
+                            </div>
+                            <div class="text-[11px] text-slate-600 mt-0.5 flex items-center gap-1">
+                                <span>🎯 Assigned SC:</span>
+                                <strong class="${isAssigned ? 'text-indigo-900 font-bold' : 'text-amber-700 italic font-semibold'}">${scName}</strong>
+                            </div>
                         </div>
 
                         <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
@@ -2132,13 +2208,14 @@
                     (l.phone || "").toLowerCase().includes(query) ||
                     (l.interested_product || "").toLowerCase().includes(query) ||
                     (l.status || "").toLowerCase().includes(query) ||
+                    (l.created_by_name || "").toLowerCase().includes(query) ||
                     (l.address || "").toLowerCase().includes(query) ||
                     (l.notes || "").toLowerCase().includes(query)
                 );
             });
 
             // Populate Modal Header
-            document.getElementById("sc-modal-title").innerText = `${sc.full_name} — Assigned Leads & Full Details`;
+            document.getElementById("sc-modal-title").innerText = `${sc.full_name} — Assigned Leads & Current Status`;
             document.getElementById("sc-modal-subtitle").innerText = `Sales Consultant • Phone: ${sc.phone || 'N/A'} • Email: ${sc.email || 'N/A'}`;
 
             const wonCount = allAssigned.filter(l => l.status === "Won").length;
@@ -2171,7 +2248,104 @@
                 `;
             } else {
                 filteredAssigned.forEach((lead, idx) => {
-                    container.innerHTML += renderLeadCardHtml(lead, idx);
+                    container.innerHTML += renderLeadCardHtml(lead, idx, "SC");
+                });
+            }
+        }
+
+        // Relationship Manager Generated Leads (Modal)
+        function openRmGeneratedLeadsModal(rmId) {
+            currentSelectedRmId = Number(rmId);
+            const searchInput = document.getElementById("rm-modal-search");
+            if (searchInput) searchInput.value = "";
+
+            renderRmModalLeads();
+
+            const modal = document.getElementById("rm-leads-modal");
+            if (modal) {
+                modal.classList.remove("hidden");
+                document.body.classList.add("overflow-hidden");
+            }
+        }
+
+        function closeRmGeneratedLeadsModal() {
+            const modal = document.getElementById("rm-leads-modal");
+            if (modal) {
+                modal.classList.add("hidden");
+                document.body.classList.remove("overflow-hidden");
+            }
+        }
+
+        function filterRmModalLeads() {
+            renderRmModalLeads();
+        }
+
+        function renderRmModalLeads() {
+            if (!currentSelectedRmId) return;
+            const users = getUsers();
+            const rm = users.find(u => u.id === currentSelectedRmId);
+            if (!rm) return;
+
+            const leads = getLeads();
+            const allGenerated = leads.filter(l => l.created_by_name === rm.full_name);
+
+            const query = (document.getElementById("rm-modal-search")?.value || "").toLowerCase().trim();
+            const filteredGenerated = allGenerated.filter(l => {
+                if (!query) return true;
+                return (
+                    (l.business_name || "").toLowerCase().includes(query) ||
+                    (l.lead_name || "").toLowerCase().includes(query) ||
+                    (l.lead_number || "").toLowerCase().includes(query) ||
+                    (l.phone || "").toLowerCase().includes(query) ||
+                    (l.interested_product || "").toLowerCase().includes(query) ||
+                    (l.status || "").toLowerCase().includes(query) ||
+                    (l.sales_person_name || "").toLowerCase().includes(query) ||
+                    (l.address || "").toLowerCase().includes(query) ||
+                    (l.notes || "").toLowerCase().includes(query)
+                );
+            });
+
+            // Populate Modal Header
+            document.getElementById("rm-modal-title").innerText = `${rm.full_name} — Generated Leads & Details`;
+            document.getElementById("rm-modal-subtitle").innerText = `Relationship Manager • Phone: ${rm.phone || 'N/A'} • Email: ${rm.email || 'N/A'}`;
+
+            const wonCount = allGenerated.filter(l => l.status === "Won").length;
+            const lostCount = allGenerated.filter(l => l.status === "Lost").length;
+            const assignedCount = allGenerated.filter(l => !!l.sales_person_id).length;
+            const unassignedCount = allGenerated.length - assignedCount;
+            const openCount = allGenerated.length - wonCount - lostCount;
+            const totalWonVal = allGenerated.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+            const conversionRate = allGenerated.length > 0 ? (wonCount / allGenerated.length * 100).toFixed(1) : "0.0";
+
+            document.getElementById("rm-modal-summary").innerHTML = `
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="px-2.5 py-1 bg-sky-100 text-sky-900 rounded-lg font-bold border border-sky-200">Total Generated: <strong class="text-sky-950">${allGenerated.length}</strong></span>
+                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-lg font-bold border border-emerald-200">Won Deals: <strong class="text-emerald-950">${wonCount}</strong></span>
+                    <span class="px-2.5 py-1 bg-blue-50 text-blue-800 rounded-lg font-bold border border-blue-200">Assigned to Sales: <strong class="text-blue-950">${assignedCount}</strong></span>
+                    ${unassignedCount > 0 ? `<span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg font-bold border border-amber-200">Pending Assignment: <strong class="text-amber-950">${unassignedCount}</strong></span>` : ''}
+                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-800 rounded-lg font-bold border border-indigo-200">In Pipeline: <strong class="text-indigo-950">${openCount}</strong></span>
+                    <span class="px-2.5 py-1 bg-red-50 text-red-800 rounded-lg font-bold border border-red-200">Not Interested: <strong class="text-red-950">${lostCount}</strong></span>
+                    <span class="px-2.5 py-1 bg-purple-50 text-purple-800 rounded-lg font-bold border border-purple-200">Win Rate: <strong class="text-purple-950">${conversionRate}%</strong></span>
+                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-lg font-bold border border-emerald-200">Won Revenue: <strong class="text-emerald-950">₹${totalWonVal.toLocaleString("en-IN")}</strong></span>
+                </div>
+            `;
+
+            document.getElementById("rm-modal-count-badge").innerText = `Showing ${filteredGenerated.length} of ${allGenerated.length} leads`;
+
+            const container = document.getElementById("rm-modal-leads-container");
+            container.innerHTML = "";
+
+            if (filteredGenerated.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 bg-white border border-dashed border-slate-300 rounded-xl">
+                        <div class="text-4xl mb-2">📋</div>
+                        <div class="font-bold text-slate-700">${allGenerated.length === 0 ? 'No Leads Generated Yet' : 'No Matching Leads Found'}</div>
+                        <div class="text-xs text-slate-500 mt-1">${allGenerated.length === 0 ? 'This Relationship Manager has not raised any prospect leads yet.' : 'Try adjusting your search query above.'}</div>
+                    </div>
+                `;
+            } else {
+                filteredGenerated.forEach((lead, idx) => {
+                    container.innerHTML += renderLeadCardHtml(lead, idx, "RM");
                 });
             }
         }
@@ -2232,7 +2406,7 @@
                 `;
             } else {
                 assignedLeads.forEach((lead, idx) => {
-                    html += renderLeadCardHtml(lead, idx);
+                    html += renderLeadCardHtml(lead, idx, "SC");
                 });
             }
 
@@ -2242,10 +2416,12 @@
             inlineContainer.classList.remove("hidden");
         }
 
-        // Global ESC handler for modal
+        // Global ESC handler for modals
         document.addEventListener("keydown", function(e) {
             if (e.key === "Escape") {
                 closeScAssignedLeadsModal();
+                closeRmGeneratedLeadsModal();
+                closeDownloadReportsModal();
             }
         });
 
@@ -2451,8 +2627,13 @@
                 return { sc, assigned, scWon, scLost, scRate, priceOnWin };
             }).sort((a, b) => b.scWon - a.scWon || b.priceOnWin - a.priceOnWin).forEach(s => {
                 scLbTbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition font-medium">
-                        <td class="p-3 font-bold text-slate-900">${s.sc.full_name}</td>
+                    <tr class="hover:bg-amber-50/40 transition font-medium">
+                        <td class="p-3">
+                            <button type="button" onclick="openScAssignedLeadsModal(${s.sc.id})" class="text-left font-bold text-blue-600 hover:text-blue-900 hover:underline flex items-center gap-1.5 group cursor-pointer">
+                                <span class="text-xs sm:text-sm font-black">${s.sc.full_name}</span>
+                                <span class="text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 rounded group-hover:bg-blue-600 group-hover:text-white transition">View Leads (${s.assigned}) 🔍</span>
+                            </button>
+                        </td>
                         <td class="p-3 font-semibold text-slate-700">${s.assigned}</td>
                         <td class="p-3 font-bold text-emerald-700">${s.scWon}</td>
                         <td class="p-3 font-bold text-red-600">${s.scLost}</td>
