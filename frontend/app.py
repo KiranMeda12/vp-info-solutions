@@ -393,17 +393,20 @@ def render_header():
 def render_admin_dashboard():
     # Top Timeframe Filter Toolbar
     st.markdown("##### 📅 Performance Timeframe")
-    tf_c1, tf_c2, tf_c3 = st.columns([1.5, 1.5, 3])
+    tf_c1, tf_c2, tf_c3, tf_c4 = st.columns([1.3, 1.5, 1.5, 3])
     current_year = datetime.now().year
     # Include current year, next 10 years, and previous years
     year_options = ["All Years"] + list(range(current_year, current_year + 11)) + [current_year - 1, current_year - 2]
     with tf_c1:
         year_sel = st.selectbox("Year", year_options, label_visibility="collapsed")
     with tf_c2:
+        quarter_options = ["All Quarters", "Q1 (Jan - Mar)", "Q2 (Apr - Jun)", "Q3 (Jul - Sep)", "Q4 (Oct - Dec)"]
+        quarter_sel = st.selectbox("Quarter", quarter_options, label_visibility="collapsed")
+    with tf_c3:
         month_names = ["All Months", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
         month_sel = st.selectbox("Month", month_names, label_visibility="collapsed")
-    with tf_c3:
-        st.caption(f"Filtering metrics for: **{year_sel}** &bull; **{month_sel}**")
+    with tf_c4:
+        st.caption(f"Filtering metrics for: **{year_sel}** &bull; **{quarter_sel}** &bull; **{month_sel}**")
 
     year_val = None if year_sel == "All Years" else int(year_sel)
     month_val = None if month_sel == "All Months" else month_names.index(month_sel)
@@ -414,10 +417,11 @@ def render_admin_dashboard():
     rms = [u for u in all_users if u["role"] == "RM"]
     scs = [u for u in all_users if u["role"] in ["Sales Consultant", "Sales Person"]]
 
-    tab_overall, tab_rm_dash, tab_sc_dash, tab_assign, tab_user_mgmt, tab_powerbi = st.tabs([
+    tab_overall, tab_rm_dash, tab_sc_dash, tab_quarterly, tab_assign, tab_user_mgmt, tab_powerbi = st.tabs([
         "🌐 Overall Executive Dashboard",
         "👔 Relationship Managers (RM) Dashboard",
         "🎯 Sales Consultants (SC) Dashboard",
+        "📊 Quarterly Reports & Trends",
         "📥 RM Leads Pending Assignment",
         "⚙️ Team Governance & User Accounts",
         "📊 Power BI Reporting Hub"
@@ -671,6 +675,47 @@ def render_admin_dashboard():
                         st.markdown(f"**🧑‍💼 Assigned Consultant:** {l.get('sales_person_name', 'Unassigned')}")
                     st.markdown(f"**📍 Company & Meeting Address:** {l.get('address', 'N/A')}")
                     st.markdown(f"**📝 Requirement Notes & RM Remarks:** {l.get('notes', 'N/A')}")
+
+    # --- TAB: QUARTERLY REPORTS ---
+    with tab_quarterly:
+        st.markdown("### 📊 Enterprise Quarterly Performance & Revenue Reports")
+        st.caption(f"Comparative Quarter-by-Quarter Breakdown for **{year_sel}**")
+
+        q_defs = [
+            {"id": "Q1", "name": "Q1 (Jan - Mar)", "m": [1, 2, 3]},
+            {"id": "Q2", "name": "Q2 (Apr - Jun)", "m": [4, 5, 6]},
+            {"id": "Q3", "name": "Q3 (Jul - Sep)", "m": [7, 8, 9]},
+            {"id": "Q4", "name": "Q4 (Oct - Dec)", "m": [10, 11, 12]},
+        ]
+
+        qc1, qc2, qc3, qc4 = st.columns(4)
+        cols = [qc1, qc2, qc3, qc4]
+        matrix_rows = []
+
+        for idx, q in enumerate(q_defs):
+            q_leads = [l for l in (all_leads or []) if l.get("meeting_date") and int(l["meeting_date"].split("-")[1]) in q["m"]]
+            q_won = [l for l in q_leads if l.get("status") == "Won"]
+            q_lost = [l for l in q_leads if l.get("status") == "Lost"]
+            q_open = len(q_leads) - len(q_won) - len(q_lost)
+            q_rev = sum(float(l.get("estimated_value") or 0) for l in q_won)
+            q_rate = round(len(q_won) / len(q_leads) * 100, 1) if q_leads else 0.0
+
+            with cols[idx]:
+                st.metric(label=q["name"], value=f"₹{q_rev:,.0f}", delta=f"{len(q_won)} Won / {len(q_leads)} Leads")
+                st.caption(f"Win Rate: **{q_rate}%** | Open: **{q_open}**")
+
+            matrix_rows.append({
+                "Quarter": q["name"],
+                "Total Leads": len(q_leads),
+                "Won Deals": len(q_won),
+                "Not Interested": len(q_lost),
+                "Open Deals": q_open,
+                "Win Rate (%)": f"{q_rate}%",
+                "Total Revenue (₹)": f"₹{q_rev:,.2f}"
+            })
+
+        st.markdown("#### 📈 Quarterly Comparative Matrix")
+        st.dataframe(pd.DataFrame(matrix_rows), use_container_width=True)
 
     # --- TAB 4: RM LEADS PENDING ASSIGNMENT ---
     with tab_assign:

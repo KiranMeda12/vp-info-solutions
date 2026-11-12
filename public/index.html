@@ -95,9 +95,13 @@
         <section id="admin-section" class="hidden space-y-6">
             <!-- Timeframe Filter -->
             <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <span class="text-base font-bold text-slate-800">📅 Performance Timeframe</span>
-                    <select id="admin-year-filter" onchange="renderAdminDashboard()" class="text-xs font-semibold bg-slate-100 border border-slate-300 rounded-md px-3 py-1.5 outline-none">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="text-base font-bold text-slate-800 flex items-center gap-1.5">
+                        <span>📅</span>
+                        <span>Performance Timeframe:</span>
+                    </span>
+                    <!-- Year Filter -->
+                    <select id="admin-year-filter" onchange="renderAdminDashboard()" class="text-xs font-semibold bg-slate-100 border border-slate-300 rounded-md px-3 py-1.5 outline-none hover:border-slate-400 focus:ring-2 focus:ring-blue-500">
                         <option value="All Years">All Years</option>
                         <option value="2026" selected>2026</option>
                         <option value="2027">2027</option>
@@ -113,7 +117,18 @@
                         <option value="2025">2025</option>
                         <option value="2024">2024</option>
                     </select>
-                    <select id="admin-month-filter" onchange="renderAdminDashboard()" class="text-xs font-semibold bg-slate-100 border border-slate-300 rounded-md px-3 py-1.5 outline-none">
+
+                    <!-- Quarterly Filter -->
+                    <select id="admin-quarter-filter" onchange="handleQuarterChange()" class="text-xs font-bold bg-blue-50 text-blue-900 border border-blue-300 rounded-md px-3 py-1.5 outline-none hover:border-blue-400 focus:ring-2 focus:ring-blue-500">
+                        <option value="All Quarters" selected>All Quarters</option>
+                        <option value="Q1">Q1 (Jan - Mar)</option>
+                        <option value="Q2">Q2 (Apr - Jun)</option>
+                        <option value="Q3">Q3 (Jul - Sep)</option>
+                        <option value="Q4">Q4 (Oct - Dec)</option>
+                    </select>
+
+                    <!-- Month Filter -->
+                    <select id="admin-month-filter" onchange="handleMonthChange()" class="text-xs font-semibold bg-slate-100 border border-slate-300 rounded-md px-3 py-1.5 outline-none hover:border-slate-400 focus:ring-2 focus:ring-blue-500">
                         <option value="All Months" selected>All Months</option>
                         <option value="1">January</option><option value="2">February</option><option value="3">March</option>
                         <option value="4">April</option><option value="5">May</option><option value="6">June</option>
@@ -121,7 +136,13 @@
                         <option value="10">October</option><option value="11">November</option><option value="12">December</option>
                     </select>
                 </div>
-                <div class="text-xs text-slate-500 font-medium">Filtering company-wide enterprise performance across all branches</div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="switchAdminTab('quarterly-reports')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                        <span>📊</span>
+                        <span>Quarterly Reports</span>
+                    </button>
+                    <span class="text-xs text-slate-500 font-medium hidden sm:inline">&bull; Filtering enterprise performance across branches</span>
+                </div>
             </div>
 
             <!-- Admin KPIs -->
@@ -161,6 +182,9 @@
                     </button>
                     <button onclick="switchAdminTab('rm-dash')" id="tabbtn-rm-dash" class="tab-btn pb-3 px-2 font-bold text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent">
                         👔 Relationship Managers (RM) Dashboard
+                    </button>
+                    <button onclick="switchAdminTab('quarterly-reports')" id="tabbtn-quarterly-reports" class="tab-btn pb-3 px-2 font-bold text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent">
+                        📊 Quarterly Reports
                     </button>
                     <button onclick="switchAdminTab('pending-assign')" id="tabbtn-pending-assign" class="tab-btn pb-3 px-2 font-bold text-sm text-slate-500 hover:text-slate-800 border-b-2 border-transparent">
                         📥 RM Leads Pending Assignment (<span id="unassigned-badge-count">0</span>)
@@ -227,6 +251,114 @@
                                 </tr>
                             </thead>
                             <tbody id="rm-leaderboard-tbody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subtab 3: Quarterly Reports & Trend Analysis -->
+            <div id="adm-tab-quarterly-reports" class="hidden space-y-6">
+                <!-- Header -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">📊</span>
+                            <h3 class="text-lg font-black text-slate-900">Enterprise Quarterly Performance & Revenue Reports</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Comparing Q1, Q2, Q3, and Q4 performance trends for <strong id="quarterly-report-year-label" class="text-slate-800 font-bold">Year 2026</strong></p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+                            Fiscal Calendar: Jan – Dec
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 4 Snapshot Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="quarterly-cards-container">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Quarterly Comparison Matrix Table -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                            <span>📈 Quarterly Performance & Conversion Matrix</span>
+                            <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full font-bold">Executive View</span>
+                        </h4>
+                        <span class="text-xs text-slate-500">All Metrics Real-Time Cloud Synced</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 uppercase font-black border-b border-slate-200">
+                                    <th class="p-3">Quarter</th>
+                                    <th class="p-3">Months Covered</th>
+                                    <th class="p-3">Total Leads</th>
+                                    <th class="p-3 text-emerald-700">Won</th>
+                                    <th class="p-3 text-red-600">Not Interested</th>
+                                    <th class="p-3 text-amber-700">Open</th>
+                                    <th class="p-3 text-indigo-700">Win Rate (%)</th>
+                                    <th class="p-3 text-right">Revenue (₹)</th>
+                                    <th class="p-3 text-right">Avg Deal (₹)</th>
+                                    <th class="p-3">Top Consultant</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quarterly-matrix-tbody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Consultant Quarterly Breakdown -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+                    <h4 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                        <span>🎯 Sales Consultant Quarterly Closures & Revenue</span>
+                        <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">By Rep</span>
+                    </h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 uppercase font-black border-b border-slate-200">
+                                    <th class="p-3">Sales Consultant</th>
+                                    <th class="p-3">Q1 (Jan-Mar)</th>
+                                    <th class="p-3">Q2 (Apr-Jun)</th>
+                                    <th class="p-3">Q3 (Jul-Sep)</th>
+                                    <th class="p-3">Q4 (Oct-Dec)</th>
+                                    <th class="p-3 text-emerald-700">Total Won</th>
+                                    <th class="p-3 text-indigo-700">Win Rate %</th>
+                                    <th class="p-3 text-right">Total Revenue (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quarterly-sc-matrix-tbody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- RM Quarterly Sourcing Breakdown -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+                    <h4 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                        <span>👔 Relationship Manager (RM) Quarterly Lead Sourcing</span>
+                        <span class="text-[10px] bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-full font-bold">Pipeline Origin</span>
+                    </h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 uppercase font-black border-b border-slate-200">
+                                    <th class="p-3">Relationship Manager</th>
+                                    <th class="p-3">Q1 Leads</th>
+                                    <th class="p-3">Q2 Leads</th>
+                                    <th class="p-3">Q3 Leads</th>
+                                    <th class="p-3">Q4 Leads</th>
+                                    <th class="p-3 text-right">Total Leads Sourced</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quarterly-rm-matrix-tbody" class="divide-y divide-slate-100">
                                 <!-- Populated dynamically -->
                             </tbody>
                         </table>
@@ -915,6 +1047,7 @@
         function switchAdminTab(t) {
             document.getElementById("adm-tab-sc-standings").classList.add("hidden");
             document.getElementById("adm-tab-rm-dash").classList.add("hidden");
+            document.getElementById("adm-tab-quarterly-reports").classList.add("hidden");
             document.getElementById("adm-tab-pending-assign").classList.add("hidden");
             document.getElementById("adm-tab-user-mgmt").classList.add("hidden");
 
@@ -929,6 +1062,40 @@
                 activeBtn.classList.add("border-amber-500", "text-slate-900");
             }
             document.getElementById("adm-tab-" + t).classList.remove("hidden");
+
+            if (t === "quarterly-reports") {
+                renderQuarterlyReports();
+            }
+        }
+
+        function handleQuarterChange() {
+            const q = document.getElementById("admin-quarter-filter").value;
+            const monthSelect = document.getElementById("admin-month-filter");
+            if (q !== "All Quarters") {
+                const qMonths = {
+                    "Q1": ["1", "2", "3"],
+                    "Q2": ["4", "5", "6"],
+                    "Q3": ["7", "8", "9"],
+                    "Q4": ["10", "11", "12"]
+                };
+                if (!qMonths[q].includes(monthSelect.value)) {
+                    monthSelect.value = "All Months";
+                }
+            }
+            renderAdminDashboard();
+        }
+
+        function handleMonthChange() {
+            const m = document.getElementById("admin-month-filter").value;
+            const qSelect = document.getElementById("admin-quarter-filter");
+            if (m !== "All Months") {
+                const mNum = parseInt(m);
+                if (mNum >= 1 && mNum <= 3) qSelect.value = "Q1";
+                else if (mNum >= 4 && mNum <= 6) qSelect.value = "Q2";
+                else if (mNum >= 7 && mNum <= 9) qSelect.value = "Q3";
+                else if (mNum >= 10 && mNum <= 12) qSelect.value = "Q4";
+            }
+            renderAdminDashboard();
         }
 
         function renderAdminDashboard() {
@@ -937,13 +1104,24 @@
             const scs = users.filter(u => u.role === "Sales Consultant" || u.role === "Sales Person");
             const rms = users.filter(u => u.role === "RM");
 
-            // Filter year & month
+            // Filter year, quarter & month
             const yearVal = document.getElementById("admin-year-filter").value;
+            const quarterVal = document.getElementById("admin-quarter-filter") ? document.getElementById("admin-quarter-filter").value : "All Quarters";
             const monthVal = document.getElementById("admin-month-filter").value;
 
             let filtered = leads;
             if (yearVal !== "All Years") {
                 filtered = filtered.filter(l => (l.meeting_date || "").startsWith(yearVal));
+            }
+            if (quarterVal !== "All Quarters") {
+                const qMap = {
+                    "Q1": ["-01-", "-02-", "-03-"],
+                    "Q2": ["-04-", "-05-", "-06-"],
+                    "Q3": ["-07-", "-08-", "-09-"],
+                    "Q4": ["-10-", "-11-", "-12-"]
+                };
+                const allowedMonths = qMap[quarterVal] || [];
+                filtered = filtered.filter(l => allowedMonths.some(m => (l.meeting_date || "").includes(m)));
             }
             if (monthVal !== "All Months") {
                 const mStr = monthVal.padStart(2, "0");
@@ -1081,6 +1259,214 @@
             // Populate RM select for adding new SC
             const rmSelect = document.getElementById("new-user-rmid");
             rmSelect.innerHTML = rms.map(r => `<option value="${r.id}">${r.full_name} (${r.username})</option>`).join("");
+
+            // Render Quarterly Reports
+            renderQuarterlyReports();
+        }
+
+        function selectQuarterFromCard(qId) {
+            const qSelect = document.getElementById("admin-quarter-filter");
+            if (qSelect) {
+                qSelect.value = qId;
+                handleQuarterChange();
+            }
+        }
+
+        function renderQuarterlyReports() {
+            const leads = getLeads();
+            const users = getUsers();
+            const scs = users.filter(u => u.role === "Sales Consultant" || u.role === "Sales Person");
+            const rms = users.filter(u => u.role === "RM");
+
+            const yearVal = document.getElementById("admin-year-filter").value;
+            const yearLabel = yearVal === "All Years" ? "All Recorded Years" : `Year ${yearVal}`;
+            const yearEl = document.getElementById("quarterly-report-year-label");
+            if (yearEl) yearEl.innerText = yearLabel;
+
+            let baseLeads = leads;
+            if (yearVal !== "All Years") {
+                baseLeads = baseLeads.filter(l => (l.meeting_date || "").startsWith(yearVal));
+            }
+
+            const quarters = [
+                { id: "Q1", name: "Q1 (Jan - Mar)", months: ["-01-", "-02-", "-03-"], label: "January – March" },
+                { id: "Q2", name: "Q2 (Apr - Jun)", months: ["-04-", "-05-", "-06-"], label: "April – June" },
+                { id: "Q3", name: "Q3 (Jul - Sep)", months: ["-07-", "-08-", "-09-"], label: "July – September" },
+                { id: "Q4", name: "Q4 (Oct - Dec)", months: ["-10-", "-11-", "-12-"], label: "October – December" }
+            ];
+
+            const currentQFilter = document.getElementById("admin-quarter-filter") ? document.getElementById("admin-quarter-filter").value : "All Quarters";
+
+            // 1. Snapshot Cards
+            const cardsContainer = document.getElementById("quarterly-cards-container");
+            if (cardsContainer) {
+                cardsContainer.innerHTML = "";
+                const qStatsList = quarters.map(q => {
+                    const qLeads = baseLeads.filter(l => q.months.some(m => (l.meeting_date || "").includes(m)));
+                    const total = qLeads.length;
+                    const won = qLeads.filter(l => l.status === "Won").length;
+                    const lost = qLeads.filter(l => l.status === "Lost").length;
+                    const open = total - won - lost;
+                    const wonRevenue = qLeads.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+                    const winRate = total > 0 ? (won / total * 100).toFixed(1) : "0.0";
+                    const avgDeal = won > 0 ? Math.round(wonRevenue / won) : 0;
+                    return { q, total, won, lost, open, wonRevenue, winRate, avgDeal, qLeads };
+                });
+
+                qStatsList.forEach(item => {
+                    const isCurrentActive = currentQFilter === item.q.id;
+                    cardsContainer.innerHTML += `
+                        <div class="bg-white border-2 ${isCurrentActive ? 'border-blue-500 shadow-md ring-2 ring-blue-100' : 'border-slate-200'} rounded-xl p-4 shadow-sm space-y-3 transition">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                <div>
+                                    <span class="text-xs font-black uppercase text-slate-800">${item.q.name}</span>
+                                    <div class="text-[10px] text-slate-500 font-medium">${item.q.label}</div>
+                                </div>
+                                ${isCurrentActive ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">Active Filter</span>' : ''}
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="bg-slate-50 p-2 rounded border border-slate-200">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase">Leads</div>
+                                    <div class="text-base font-black text-slate-900">${item.total}</div>
+                                </div>
+                                <div class="bg-emerald-50 p-2 rounded border border-emerald-200">
+                                    <div class="text-[10px] font-bold text-emerald-700 uppercase">Won</div>
+                                    <div class="text-base font-black text-emerald-900">${item.won}</div>
+                                </div>
+                                <div class="bg-indigo-50 p-2 rounded border border-indigo-200">
+                                    <div class="text-[10px] font-bold text-indigo-700 uppercase">Win Rate</div>
+                                    <div class="text-base font-black text-indigo-900">${item.winRate}%</div>
+                                </div>
+                                <div class="bg-purple-50 p-2 rounded border border-purple-200">
+                                    <div class="text-[10px] font-bold text-purple-700 uppercase">Won Value</div>
+                                    <div class="text-xs font-black text-purple-900 mt-1 truncate">₹${item.wonRevenue.toLocaleString("en-IN")}</div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="selectQuarterFromCard('${item.q.id}')" class="w-full py-1.5 text-xs font-bold ${isCurrentActive ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-700'} rounded-lg transition text-center cursor-pointer">
+                                ${isCurrentActive ? '✓ Currently Filtered' : 'Filter Dashboard by ' + item.q.id}
+                            </button>
+                        </div>
+                    `;
+                });
+
+                // 2. Quarterly Matrix Table
+                const matrixTbody = document.getElementById("quarterly-matrix-tbody");
+                if (matrixTbody) {
+                    matrixTbody.innerHTML = "";
+                    let totalAllLeads = 0;
+                    let totalAllWon = 0;
+                    let totalAllLost = 0;
+                    let totalAllOpen = 0;
+                    let totalAllRev = 0;
+
+                    qStatsList.forEach(item => {
+                        totalAllLeads += item.total;
+                        totalAllWon += item.won;
+                        totalAllLost += item.lost;
+                        totalAllOpen += item.open;
+                        totalAllRev += item.wonRevenue;
+
+                        // Top consultant in quarter
+                        let topSc = "N/A";
+                        let topScVal = -1;
+                        scs.forEach(sc => {
+                            const scWonInQ = item.qLeads.filter(l => l.sales_person_id === sc.id && l.status === "Won");
+                            const scValInQ = scWonInQ.reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+                            if (scWonInQ.length > 0 && scValInQ > topScVal) {
+                                topScVal = scValInQ;
+                                topSc = `${sc.full_name} (${scWonInQ.length} won • ₹${scValInQ.toLocaleString("en-IN")})`;
+                            }
+                        });
+
+                        matrixTbody.innerHTML += `
+                            <tr class="hover:bg-slate-50 transition font-medium">
+                                <td class="p-3 font-bold text-slate-900">${item.q.name}</td>
+                                <td class="p-3 text-slate-500">${item.q.label}</td>
+                                <td class="p-3 font-bold text-slate-800">${item.total}</td>
+                                <td class="p-3 font-bold text-emerald-700">${item.won}</td>
+                                <td class="p-3 font-bold text-red-600">${item.lost}</td>
+                                <td class="p-3 font-semibold text-amber-700">${item.open}</td>
+                                <td class="p-3 font-bold text-indigo-700">${item.winRate}%</td>
+                                <td class="p-3 text-right font-black text-slate-900">₹${item.wonRevenue.toLocaleString("en-IN")}</td>
+                                <td class="p-3 text-right font-semibold text-slate-600">₹${item.avgDeal.toLocaleString("en-IN")}</td>
+                                <td class="p-3 text-blue-700 font-medium">${topSc}</td>
+                            </tr>
+                        `;
+                    });
+
+                    const totalWinRate = totalAllLeads > 0 ? (totalAllWon / totalAllLeads * 100).toFixed(1) : "0.0";
+                    const totalAvgDeal = totalAllWon > 0 ? Math.round(totalAllRev / totalAllWon) : 0;
+                    matrixTbody.innerHTML += `
+                        <tr class="bg-slate-100 text-slate-900 font-black border-t-2 border-slate-300">
+                            <td class="p-3 uppercase">Total / Full Year</td>
+                            <td class="p-3 text-slate-500">All 12 Months</td>
+                            <td class="p-3">${totalAllLeads}</td>
+                            <td class="p-3 text-emerald-800">${totalAllWon}</td>
+                            <td class="p-3 text-red-700">${totalAllLost}</td>
+                            <td class="p-3 text-amber-800">${totalAllOpen}</td>
+                            <td class="p-3 text-indigo-800">${totalWinRate}%</td>
+                            <td class="p-3 text-right text-emerald-900 text-sm">₹${totalAllRev.toLocaleString("en-IN")}</td>
+                            <td class="p-3 text-right">₹${totalAvgDeal.toLocaleString("en-IN")}</td>
+                            <td class="p-3 text-slate-600">All Consultants</td>
+                        </tr>
+                    `;
+                }
+
+                // 3. Sales Consultant Quarterly Matrix
+                const scMatrixTbody = document.getElementById("quarterly-sc-matrix-tbody");
+                if (scMatrixTbody) {
+                    scMatrixTbody.innerHTML = "";
+                    scs.forEach(sc => {
+                        const scLeads = baseLeads.filter(l => l.sales_person_id === sc.id);
+                        const qBreakdown = quarters.map(q => {
+                            const inQ = scLeads.filter(l => q.months.some(m => (l.meeting_date || "").includes(m)));
+                            const wonInQ = inQ.filter(l => l.status === "Won");
+                            const revInQ = wonInQ.reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+                            return { total: inQ.length, won: wonInQ.length, rev: revInQ };
+                        });
+                        const totalWon = scLeads.filter(l => l.status === "Won").length;
+                        const totalRev = scLeads.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+                        const winRate = scLeads.length > 0 ? (totalWon / scLeads.length * 100).toFixed(1) : "0.0";
+
+                        scMatrixTbody.innerHTML += `
+                            <tr class="hover:bg-slate-50 transition font-medium">
+                                <td class="p-3 font-bold text-slate-900">${sc.full_name}</td>
+                                <td class="p-3"><strong>${qBreakdown[0].won}</strong> won <span class="text-slate-400">/ ${qBreakdown[0].total}</span> <div class="text-[11px] text-emerald-700 font-semibold">₹${qBreakdown[0].rev.toLocaleString("en-IN")}</div></td>
+                                <td class="p-3"><strong>${qBreakdown[1].won}</strong> won <span class="text-slate-400">/ ${qBreakdown[1].total}</span> <div class="text-[11px] text-emerald-700 font-semibold">₹${qBreakdown[1].rev.toLocaleString("en-IN")}</div></td>
+                                <td class="p-3"><strong>${qBreakdown[2].won}</strong> won <span class="text-slate-400">/ ${qBreakdown[2].total}</span> <div class="text-[11px] text-emerald-700 font-semibold">₹${qBreakdown[2].rev.toLocaleString("en-IN")}</div></td>
+                                <td class="p-3"><strong>${qBreakdown[3].won}</strong> won <span class="text-slate-400">/ ${qBreakdown[3].total}</span> <div class="text-[11px] text-emerald-700 font-semibold">₹${qBreakdown[3].rev.toLocaleString("en-IN")}</div></td>
+                                <td class="p-3 font-bold text-emerald-800">${totalWon}</td>
+                                <td class="p-3 font-bold text-indigo-700">${winRate}%</td>
+                                <td class="p-3 text-right font-black text-slate-900">₹${totalRev.toLocaleString("en-IN")}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                // 4. RM Quarterly Sourcing Matrix
+                const rmMatrixTbody = document.getElementById("quarterly-rm-matrix-tbody");
+                if (rmMatrixTbody) {
+                    rmMatrixTbody.innerHTML = "";
+                    rms.forEach(rm => {
+                        const rmLeads = baseLeads.filter(l => l.created_by_name === rm.full_name);
+                        const qSourced = quarters.map(q => {
+                            return rmLeads.filter(l => q.months.some(m => (l.meeting_date || "").includes(m))).length;
+                        });
+                        const totalRmSourced = rmLeads.length;
+
+                        rmMatrixTbody.innerHTML += `
+                            <tr class="hover:bg-slate-50 transition font-medium">
+                                <td class="p-3 font-bold text-slate-900">${rm.full_name}</td>
+                                <td class="p-3 font-semibold text-slate-700">${qSourced[0]} leads</td>
+                                <td class="p-3 font-semibold text-slate-700">${qSourced[1]} leads</td>
+                                <td class="p-3 font-semibold text-slate-700">${qSourced[2]} leads</td>
+                                <td class="p-3 font-semibold text-slate-700">${qSourced[3]} leads</td>
+                                <td class="p-3 text-right font-black text-blue-800">${totalRmSourced} leads</td>
+                            </tr>
+                        `;
+                    });
+                }
+            }
         }
 
         // Sales Consultant Assigned Leads Drill-down (Modal & Inline Details)
