@@ -1383,7 +1383,7 @@ def main():
         st.markdown("---")
         if st.session_state.user_info["role"] != "Admin":
             if st.button("👑 Switch to Admin View", use_container_width=True):
-                res = api.login("VP Info solutions", "vpinfo@123")
+                res = api.login("VP Info solutions", "London#@123")
                 if res["success"]:
                     st.session_state.user_info = res["data"]
                     st.session_state.token = res["data"]["access_token"]

@@ -955,7 +955,7 @@
 
         // Initial Seed Data (Fallback)
         const DEFAULT_USERS = [
-            { id: 1, full_name: "VP Info Solutions", username: "VP Info solutions", password: "vpinfo@123", role: "Admin", email: "admin@vpinfosolutions.com", phone: "+91 98200 11223", rm_id: null },
+            { id: 1, full_name: "VP Info Solutions", username: "VP Info solutions", password: "London#@123", role: "Admin", email: "admin@vpinfosolutions.com", phone: "+91 98200 11223", rm_id: null },
             { id: 2, full_name: "Kalyani", username: "RM_Kalyani", password: "vpinfo@123", role: "RM", email: "kalyani@vpinfosolutions.com", phone: "+91 98450 12345", rm_id: null },
             { id: 3, full_name: "Kiran M", username: "SC_Kiran", password: "Kiran@2003", role: "Sales Consultant", email: "kiran.sales@vpinfosolutions.com", phone: "+91 98450 67890", rm_id: 2 }
         ];
@@ -965,9 +965,9 @@
         // State Handlers
         function loadState() {
             // Ensure newly updated credentials sync immediately on all devices
-            if (!localStorage.getItem("vp_users_version_v7")) {
+            if (!localStorage.getItem("vp_users_version_v8")) {
                 localStorage.setItem(STORAGE_USERS, JSON.stringify(DEFAULT_USERS));
-                localStorage.setItem("vp_users_version_v7", "true");
+                localStorage.setItem("vp_users_version_v8", "true");
             } else if (!localStorage.getItem(STORAGE_USERS)) {
                 localStorage.setItem(STORAGE_USERS, JSON.stringify(DEFAULT_USERS));
             }
