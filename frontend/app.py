@@ -308,11 +308,6 @@ def render_login():
 
     col1, col2, col3 = st.columns([1, 1.6, 1])
     with col2:
-        st.markdown("**⚡ Quick Master Sign-In:**")
-        if st.button("👑 Fill Admin Credentials (VP Info solutions / vpinfo@123)", use_container_width=True):
-            st.session_state["login_user"] = "VP Info solutions"
-            st.session_state["login_pass"] = "vpinfo@123"
-
         with st.form("login_form"):
             default_user = st.session_state.get("login_user", "")
             default_pass = st.session_state.get("login_pass", "")
