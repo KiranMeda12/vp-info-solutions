@@ -174,10 +174,13 @@
             <!-- Subtab 1: SC Standings Table -->
             <div id="adm-tab-sc-standings" class="space-y-4">
                 <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                    <h3 class="text-base font-extrabold text-slate-900 mb-3 flex items-center justify-between">
-                        <span>🏆 Sales Consultant Standings</span>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                            <span>🏆 Sales Consultant Standings</span>
+                            <span class="text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">Click Name for Assigned Leads</span>
+                        </h3>
                         <span class="text-xs font-normal text-slate-500">Ranked by Won Deals & Price on Win</span>
-                    </h3>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
@@ -195,6 +198,15 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="mt-3.5 pt-3 border-t border-slate-100 text-xs text-slate-600 flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-800 text-[11px] font-bold">💡</span>
+                        <span>Click any <strong>Sales Consultant's name</strong> to inspect their assigned leads with full company details, meeting dates, contact information, addresses, and RM requirement notes.</span>
+                    </div>
+                </div>
+
+                <!-- Inline Assigned Leads Details Container -->
+                <div id="sc-standings-inline-details" class="hidden bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+                    <!-- Populated dynamically when clicking a sales consultant -->
                 </div>
             </div>
 
@@ -592,6 +604,48 @@
             </div>
         </section>
 
+        <!-- Modal: Sales Consultant Assigned Leads & Full Details -->
+        <div id="sc-leads-modal" onclick="if(event.target === this) closeScAssignedLeadsModal()" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6 transition-all">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+                <!-- Modal Header -->
+                <div class="p-5 border-b border-slate-200 bg-slate-50 flex items-start justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">👤</span>
+                            <h3 id="sc-modal-title" class="text-lg font-black text-slate-900">Sales Consultant Assigned Leads</h3>
+                        </div>
+                        <p id="sc-modal-subtitle" class="text-xs text-slate-500 mt-1 font-medium"></p>
+                        <div id="sc-modal-summary" class="mt-3"></div>
+                    </div>
+                    <button type="button" onclick="closeScAssignedLeadsModal()" title="Close (Esc)" class="text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg p-2 transition text-sm font-bold leading-none cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Modal Search / Filter -->
+                <div class="px-5 py-3 border-b border-slate-100 bg-white flex items-center justify-between gap-3">
+                    <div class="relative flex-1">
+                        <input type="text" id="sc-modal-search" oninput="filterScModalLeads()" placeholder="Search assigned leads by company, person, product, or lead #..." class="w-full text-xs p-2.5 pl-8 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <span class="absolute left-2.5 top-2.5 text-slate-400 text-xs">🔍</span>
+                    </div>
+                    <span id="sc-modal-count-badge" class="text-xs font-bold text-slate-500 whitespace-nowrap"></span>
+                </div>
+
+                <!-- Modal Body (Scrollable) -->
+                <div id="sc-modal-leads-container" class="p-5 overflow-y-auto space-y-4 max-h-[60vh] bg-slate-50/50">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                    <span class="text-xs text-slate-500 italic">Showing complete prospect dossier & RM meeting notes</span>
+                    <button type="button" onclick="closeScAssignedLeadsModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition cursor-pointer">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Footer -->
@@ -929,8 +983,13 @@
             } else {
                 scStats.forEach(s => {
                     scTbody.innerHTML += `
-                        <tr class="hover:bg-slate-50 transition font-medium">
-                            <td class="p-3 font-bold text-slate-900">${s.sc.full_name}</td>
+                        <tr class="hover:bg-amber-50/40 transition font-medium">
+                            <td class="p-3">
+                                <button type="button" onclick="openScAssignedLeadsModal(${s.sc.id})" class="text-left font-bold text-blue-600 hover:text-blue-900 hover:underline flex items-center gap-1.5 group cursor-pointer">
+                                    <span class="text-xs sm:text-sm font-black">${s.sc.full_name}</span>
+                                    <span class="text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 rounded group-hover:bg-blue-600 group-hover:text-white transition">View Leads (${s.assigned}) 🔍</span>
+                                </button>
+                            </td>
                             <td class="p-3 font-semibold text-slate-700">${s.assigned}</td>
                             <td class="p-3 font-bold text-emerald-700">${s.scWon}</td>
                             <td class="p-3 font-bold text-red-600">${s.scLost}</td>
@@ -939,6 +998,14 @@
                         </tr>
                     `;
                 });
+            }
+
+            // If an inline details view is currently open, refresh it with latest data
+            if (currentSelectedScId && !document.getElementById("sc-standings-inline-details").classList.contains("hidden")) {
+                renderScInlineDetails(currentSelectedScId);
+            }
+            if (currentSelectedScId && document.getElementById("sc-leads-modal") && !document.getElementById("sc-leads-modal").classList.contains("hidden")) {
+                renderScModalLeads();
             }
 
             // RM Leaderboard
@@ -1015,6 +1082,266 @@
             const rmSelect = document.getElementById("new-user-rmid");
             rmSelect.innerHTML = rms.map(r => `<option value="${r.id}">${r.full_name} (${r.username})</option>`).join("");
         }
+
+        // Sales Consultant Assigned Leads Drill-down (Modal & Inline Details)
+        let currentSelectedScId = null;
+
+        function renderLeadCardHtml(lead, idx) {
+            const statusColor = 
+                lead.status === "Won" ? "bg-emerald-100 text-emerald-800 border-emerald-300" :
+                lead.status === "Lost" ? "bg-red-100 text-red-800 border-red-300" :
+                lead.status === "Demo Scheduled" ? "bg-blue-100 text-blue-800 border-blue-300" :
+                lead.status === "Negotiation" ? "bg-amber-100 text-amber-800 border-amber-300" :
+                lead.status === "Contacted" ? "bg-sky-100 text-sky-800 border-sky-300" :
+                "bg-slate-100 text-slate-800 border-slate-300";
+
+            const statusIcon = 
+                lead.status === "Won" ? "🏆" :
+                lead.status === "Lost" ? "❌" :
+                lead.status === "Demo Scheduled" ? "📅" :
+                lead.status === "Negotiation" ? "🤝" :
+                lead.status === "Contacted" ? "📞" : "✨";
+
+            const displayStatus = lead.status === "Lost" ? "Not Interested" : lead.status;
+            const estVal = Number(lead.estimated_value) || 0;
+
+            return `
+                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-400 transition space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono font-bold bg-slate-900 text-amber-400 px-2.5 py-0.5 rounded shadow-sm">#${lead.lead_number}</span>
+                            <h4 class="font-extrabold text-base text-slate-900">🏢 ${lead.business_name}</h4>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full border ${statusColor} flex items-center gap-1 shadow-xs">
+                                <span>${statusIcon}</span>
+                                <span>${displayStatus}</span>
+                            </span>
+                            ${lead.status === 'Won' ? `<span class="text-xs font-black text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Price on Win: ₹${estVal.toLocaleString("en-IN")}</span>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">👤 Person to Meet</div>
+                            <div class="font-extrabold text-slate-900 text-sm mt-0.5">${lead.lead_name}</div>
+                            <div class="text-slate-500 font-medium">${lead.designation || 'Designation N/A'}</div>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">📞 Contact Information</div>
+                            <div class="font-bold text-slate-800 mt-0.5">
+                                <a href="tel:${lead.phone}" class="hover:text-blue-600 hover:underline flex items-center gap-1">
+                                    <span>📞</span> ${lead.phone || 'N/A'}
+                                </a>
+                            </div>
+                            <div class="text-slate-500 mt-1 truncate">
+                                ${lead.email ? `<a href="mailto:${lead.email}" class="hover:text-blue-600 hover:underline flex items-center gap-1"><span>✉️</span> ${lead.email}</a>` : 'No email provided'}
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">📅 Scheduled Meeting</div>
+                            <div class="font-extrabold text-slate-900 mt-0.5 flex items-center gap-1">
+                                <span>🗓️</span> ${lead.meeting_date || 'N/A'}
+                            </div>
+                            <div class="text-blue-600 font-bold mt-1 flex items-center gap-1">
+                                <span>⏰</span> ${lead.meeting_time || 'N/A'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">📦 Interested Product & Source</div>
+                            <div class="font-black text-amber-800 text-sm mt-0.5">${lead.interested_product || 'General / Not specified'}</div>
+                            <div class="text-[11px] text-slate-600 mt-1">👔 Generated by: <strong class="text-slate-800">${lead.created_by_name || 'Direct Lead'}</strong></div>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">📍 Company & Meeting Address (From RM)</div>
+                            <div class="text-slate-800 mt-1 font-medium leading-relaxed">${lead.address || 'Address not recorded'}</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-200 text-xs">
+                        <div class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">📝 Requirement Notes & RM Remarks</div>
+                        <div class="text-slate-800 mt-1 italic leading-relaxed">${lead.notes || 'No notes entered'}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openScAssignedLeadsModal(scId) {
+            currentSelectedScId = Number(scId);
+            const searchInput = document.getElementById("sc-modal-search");
+            if (searchInput) searchInput.value = "";
+
+            renderScModalLeads();
+            renderScInlineDetails(scId);
+
+            const modal = document.getElementById("sc-leads-modal");
+            if (modal) {
+                modal.classList.remove("hidden");
+                document.body.classList.add("overflow-hidden");
+            }
+        }
+
+        function closeScAssignedLeadsModal() {
+            const modal = document.getElementById("sc-leads-modal");
+            if (modal) {
+                modal.classList.add("hidden");
+                document.body.classList.remove("overflow-hidden");
+            }
+        }
+
+        function closeScInlineDetails() {
+            const inlineContainer = document.getElementById("sc-standings-inline-details");
+            if (inlineContainer) {
+                inlineContainer.classList.add("hidden");
+                inlineContainer.innerHTML = "";
+            }
+        }
+
+        function filterScModalLeads() {
+            renderScModalLeads();
+        }
+
+        function renderScModalLeads() {
+            if (!currentSelectedScId) return;
+            const users = getUsers();
+            const sc = users.find(u => u.id === currentSelectedScId);
+            if (!sc) return;
+
+            const leads = getLeads();
+            const allAssigned = leads.filter(l => l.sales_person_id === currentSelectedScId);
+
+            const query = (document.getElementById("sc-modal-search")?.value || "").toLowerCase().trim();
+            const filteredAssigned = allAssigned.filter(l => {
+                if (!query) return true;
+                return (
+                    (l.business_name || "").toLowerCase().includes(query) ||
+                    (l.lead_name || "").toLowerCase().includes(query) ||
+                    (l.lead_number || "").toLowerCase().includes(query) ||
+                    (l.phone || "").toLowerCase().includes(query) ||
+                    (l.interested_product || "").toLowerCase().includes(query) ||
+                    (l.status || "").toLowerCase().includes(query) ||
+                    (l.address || "").toLowerCase().includes(query) ||
+                    (l.notes || "").toLowerCase().includes(query)
+                );
+            });
+
+            // Populate Modal Header
+            document.getElementById("sc-modal-title").innerText = `${sc.full_name} — Assigned Leads & Full Details`;
+            document.getElementById("sc-modal-subtitle").innerText = `Sales Consultant • Phone: ${sc.phone || 'N/A'} • Email: ${sc.email || 'N/A'}`;
+
+            const wonCount = allAssigned.filter(l => l.status === "Won").length;
+            const lostCount = allAssigned.filter(l => l.status === "Lost").length;
+            const openCount = allAssigned.length - wonCount - lostCount;
+            const totalWonVal = allAssigned.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+
+            document.getElementById("sc-modal-summary").innerHTML = `
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="px-2.5 py-1 bg-slate-100 text-slate-800 rounded-lg font-bold border border-slate-200">Total Assigned: <strong class="text-slate-950">${allAssigned.length}</strong></span>
+                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-lg font-bold border border-emerald-200">Won: <strong class="text-emerald-950">${wonCount}</strong></span>
+                    <span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg font-bold border border-amber-200">In Progress: <strong class="text-amber-950">${openCount}</strong></span>
+                    <span class="px-2.5 py-1 bg-red-50 text-red-800 rounded-lg font-bold border border-red-200">Not Interested: <strong class="text-red-950">${lostCount}</strong></span>
+                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-800 rounded-lg font-bold border border-indigo-200">Won Revenue: <strong class="text-indigo-950">₹${totalWonVal.toLocaleString("en-IN")}</strong></span>
+                </div>
+            `;
+
+            document.getElementById("sc-modal-count-badge").innerText = `Showing ${filteredAssigned.length} of ${allAssigned.length} leads`;
+
+            const container = document.getElementById("sc-modal-leads-container");
+            container.innerHTML = "";
+
+            if (filteredAssigned.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 bg-white border border-dashed border-slate-300 rounded-xl">
+                        <div class="text-4xl mb-2">📋</div>
+                        <div class="font-bold text-slate-700">${allAssigned.length === 0 ? 'No Leads Assigned Yet' : 'No Matching Leads Found'}</div>
+                        <div class="text-xs text-slate-500 mt-1">${allAssigned.length === 0 ? 'This sales consultant has not been assigned any prospect leads.' : 'Try adjusting your search query above.'}</div>
+                    </div>
+                `;
+            } else {
+                filteredAssigned.forEach((lead, idx) => {
+                    container.innerHTML += renderLeadCardHtml(lead, idx);
+                });
+            }
+        }
+
+        function renderScInlineDetails(scId) {
+            const inlineContainer = document.getElementById("sc-standings-inline-details");
+            if (!inlineContainer) return;
+
+            const users = getUsers();
+            const sc = users.find(u => u.id === Number(scId));
+            if (!sc) return;
+
+            const leads = getLeads();
+            const assignedLeads = leads.filter(l => l.sales_person_id === Number(scId));
+
+            const wonCount = assignedLeads.filter(l => l.status === "Won").length;
+            const lostCount = assignedLeads.filter(l => l.status === "Lost").length;
+            const openCount = assignedLeads.length - wonCount - lostCount;
+            const totalWonVal = assignedLeads.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+
+            let html = `
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">👤</span>
+                            <h3 class="text-base font-black text-slate-900">${sc.full_name} — Assigned Leads & Full Dossier</h3>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-1">Sales Consultant • Phone: ${sc.phone || 'N/A'} • Email: ${sc.email || 'N/A'}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="openScAssignedLeadsModal(${sc.id})" class="px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer">
+                            <span>⛶</span> Focus In Modal
+                        </button>
+                        <button type="button" onclick="closeScInlineDetails()" class="px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-bold transition cursor-pointer">
+                            ✕ Hide
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="px-2.5 py-1 bg-slate-100 text-slate-800 rounded-lg font-bold border border-slate-200">Total Assigned: <strong class="text-slate-950">${assignedLeads.length}</strong></span>
+                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-lg font-bold border border-emerald-200">Won: <strong class="text-emerald-950">${wonCount}</strong></span>
+                    <span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg font-bold border border-amber-200">In Progress: <strong class="text-amber-950">${openCount}</strong></span>
+                    <span class="px-2.5 py-1 bg-red-50 text-red-800 rounded-lg font-bold border border-red-200">Not Interested: <strong class="text-red-950">${lostCount}</strong></span>
+                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-800 rounded-lg font-bold border border-indigo-200">Won Revenue: <strong class="text-indigo-950">₹${totalWonVal.toLocaleString("en-IN")}</strong></span>
+                </div>
+
+                <div class="space-y-4 mt-2">
+            `;
+
+            if (assignedLeads.length === 0) {
+                html += `
+                    <div class="text-center py-8 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                        <div class="text-3xl mb-1">📋</div>
+                        <div class="font-bold text-slate-700">No Leads Assigned Yet</div>
+                        <div class="text-xs text-slate-500 mt-1">This sales consultant currently has 0 assigned leads.</div>
+                    </div>
+                `;
+            } else {
+                assignedLeads.forEach((lead, idx) => {
+                    html += renderLeadCardHtml(lead, idx);
+                });
+            }
+
+            html += `</div>`;
+
+            inlineContainer.innerHTML = html;
+            inlineContainer.classList.remove("hidden");
+        }
+
+        // Global ESC handler for modal
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                closeScAssignedLeadsModal();
+            }
+        });
 
         async function assignLeadByAdmin(leadId) {
             const scId = Number(document.getElementById(`assign-sc-for-${leadId}`).value);
