@@ -6,6 +6,7 @@
     <title>VP Info Solutions Pvt Ltd | Enterprise Sales Portal (Tally Certified Partner)</title>
     <!-- Tailwind CSS for modern responsive layout -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #F8FAFC; }
         .bg-navy { background-color: #0A192F; }
@@ -136,12 +137,16 @@
                         <option value="10">October</option><option value="11">November</option><option value="12">December</option>
                     </select>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="openDownloadReportsModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                        <span>📥</span>
+                        <span>Download Reports (Excel / PDF)</span>
+                    </button>
                     <button type="button" onclick="switchAdminTab('quarterly-reports')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
                         <span>📊</span>
                         <span>Quarterly Reports</span>
                     </button>
-                    <span class="text-xs text-slate-500 font-medium hidden sm:inline">&bull; Filtering enterprise performance across branches</span>
+                    <span class="text-xs text-slate-500 font-medium hidden lg:inline">&bull; Enterprise dossiers</span>
                 </div>
             </div>
 
@@ -269,7 +274,15 @@
                         </div>
                         <p class="text-xs text-slate-500 mt-1">Comparing Q1, Q2, Q3, and Q4 performance trends for <strong id="quarterly-report-year-label" class="text-slate-800 font-bold">Year 2026</strong></p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="downloadQuarterlyReport('excel')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                            <span>📗</span>
+                            <span>Export Quarterly Excel</span>
+                        </button>
+                        <button type="button" onclick="downloadQuarterlyReport('pdf')" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                            <span>📕</span>
+                            <span>Export Quarterly PDF</span>
+                        </button>
                         <span class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
                             Fiscal Calendar: Jan – Dec
                         </span>
@@ -778,6 +791,120 @@
             </div>
         </div>
 
+        <!-- Modal: Download Reports (Excel & PDF) -->
+        <div id="download-reports-modal" onclick="if(event.target === this) closeDownloadReportsModal()" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6 transition-all">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full flex flex-col overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+                <!-- Modal Header -->
+                <div class="p-5 border-b border-slate-200 bg-slate-50 flex items-start justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">📥</span>
+                            <h3 class="text-lg font-black text-slate-900">Download Performance Reports</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Export executive enterprise sales dossiers in formatted Excel or PDF</p>
+                    </div>
+                    <button type="button" onclick="closeDownloadReportsModal()" title="Close (Esc)" class="text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg p-2 transition text-sm font-bold leading-none cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 space-y-4 text-xs">
+                    <!-- Report Type Selection -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Select Report Type</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" id="rep-type-monthly" onclick="selectReportType('monthly')" class="py-2.5 px-3 rounded-lg font-bold border-2 border-blue-600 bg-blue-50 text-blue-800 text-center transition cursor-pointer">
+                                📅 Monthly Report
+                            </button>
+                            <button type="button" id="rep-type-quarterly" onclick="selectReportType('quarterly')" class="py-2.5 px-3 rounded-lg font-bold border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-center transition cursor-pointer">
+                                📊 Quarterly Report
+                            </button>
+                            <button type="button" id="rep-type-custom" onclick="selectReportType('custom')" class="py-2.5 px-3 rounded-lg font-bold border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-center transition cursor-pointer">
+                                🎯 Current Filter
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Parameters Container -->
+                    <div class="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Select Year</label>
+                            <select id="rep-param-year" class="w-full text-xs font-semibold bg-white border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                                <option value="All Years">All Years</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                            </select>
+                        </div>
+
+                        <!-- Monthly Selector -->
+                        <div id="rep-param-month-container">
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Select Month</label>
+                            <select id="rep-param-month" class="w-full text-xs font-semibold bg-white border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                                <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                                <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                                <option value="10">October</option><option value="11" selected>November</option><option value="12">December</option>
+                                <option value="All Months">All Months</option>
+                            </select>
+                        </div>
+
+                        <!-- Quarterly Selector -->
+                        <div id="rep-param-quarter-container" class="hidden">
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Select Quarter</label>
+                            <select id="rep-param-quarter" class="w-full text-xs font-semibold bg-white border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Q1">Q1 (Jan - Mar)</option>
+                                <option value="Q2">Q2 (Apr - Jun)</option>
+                                <option value="Q3">Q3 (Jul - Sep)</option>
+                                <option value="Q4" selected>Q4 (Oct - Dec)</option>
+                                <option value="All Quarters">All Quarters</option>
+                            </select>
+                        </div>
+
+                        <!-- Custom notice -->
+                        <div id="rep-param-custom-container" class="hidden col-span-2">
+                            <div class="text-xs text-blue-700 font-medium">Exports all records matching the currently active dashboard filters.</div>
+                        </div>
+                    </div>
+
+                    <!-- Sorting Rule Notice -->
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5 text-xs">
+                        <span class="text-amber-700 text-base leading-none">📌</span>
+                        <div>
+                            <div class="font-extrabold text-amber-950">Sorting Order Guaranteed:</div>
+                            <div class="text-amber-800 mt-0.5 leading-relaxed">
+                                Leads are strictly sorted with <strong>🏆 Won</strong> deals first, followed by <strong>❌ Not Interested</strong>, and then active pipeline stages.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Download Buttons -->
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button type="button" onclick="executeReportDownload('excel')" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow transition flex items-center justify-center gap-2 cursor-pointer">
+                            <span>📗</span>
+                            <span>Download in Excel (.csv)</span>
+                        </button>
+                        <button type="button" onclick="executeReportDownload('pdf')" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-xl shadow transition flex items-center justify-center gap-2 cursor-pointer">
+                            <span>📕</span>
+                            <span>Download in PDF</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+                    <button type="button" onclick="closeDownloadReportsModal()" class="px-4 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-200 rounded-lg transition cursor-pointer">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Footer -->
@@ -800,54 +927,19 @@
             { id: 3, full_name: "Kiran M", username: "Sales_kiran", password: "sales123", role: "Sales Consultant", email: "kiran.sales@vpinfosolutions.com", phone: "+91 98450 67890", rm_id: 2 }
         ];
 
-        const DEFAULT_LEADS = [
-            {
-                id: 1,
-                lead_number: "VP-2026-0001",
-                business_name: "Mahavir Engineering Works",
-                lead_name: "Suresh Jain",
-                designation: "Managing Director",
-                phone: "+91 98220 12345",
-                email: "suresh@mahavirengg.com",
-                address: "Plot 18, Phase 1, Hinjewadi IT Park, Pune",
-                meeting_date: "2026-11-20",
-                meeting_time: "11:30 AM",
-                interested_product: "TallyPrime Silver/Gold",
-                status: "Demo Scheduled",
-                estimated_value: 0.0,
-                notes: "Interested in multi-user gold license with barcoding customization.",
-                created_by_name: "Kiran Meda",
-                sales_person_id: 3,
-                sales_person_name: "Kiran M"
-            },
-            {
-                id: 2,
-                lead_number: "VP-2026-0002",
-                business_name: "Dynamic Auto Components",
-                lead_name: "Rajesh Gupta",
-                designation: "General Manager - Accounts",
-                phone: "+91 98111 55443",
-                email: "rgupta@dynamicauto.in",
-                address: "Sector 58, Industrial Area, Faridabad",
-                meeting_date: "2026-11-22",
-                meeting_time: "03:00 PM",
-                interested_product: "Tally on Cloud",
-                status: "Won",
-                estimated_value: 65000.0,
-                notes: "Closed 5-user cloud license for multiple factory locations.",
-                created_by_name: "Kiran Meda",
-                sales_person_id: 3,
-                sales_person_name: "Kiran M"
-            }
-        ];
+        const DEFAULT_LEADS = [];
 
         // State Handlers
         function loadState() {
             if (!localStorage.getItem(STORAGE_USERS)) {
                 localStorage.setItem(STORAGE_USERS, JSON.stringify(DEFAULT_USERS));
             }
-            if (!localStorage.getItem(STORAGE_LEADS)) {
-                localStorage.setItem(STORAGE_LEADS, JSON.stringify(DEFAULT_LEADS));
+            // Clear past test leads as requested by user
+            if (!localStorage.getItem("vp_leads_cleared_v5")) {
+                localStorage.setItem(STORAGE_LEADS, JSON.stringify([]));
+                localStorage.setItem("vp_leads_cleared_v5", "true");
+            } else if (!localStorage.getItem(STORAGE_LEADS)) {
+                localStorage.setItem(STORAGE_LEADS, JSON.stringify([]));
             }
         }
         function getUsers() { return JSON.parse(localStorage.getItem(STORAGE_USERS) || "[]"); }
@@ -1466,6 +1558,429 @@
                         `;
                     });
                 }
+            }
+        }
+
+        // -------------------------------------------------------------
+        // ENTERPRISE REPORT EXPORTS (EXCEL & PDF)
+        // Strictly Sorted: 1. Won Deals, 2. Not Interested, 3. Other Stages
+        // -------------------------------------------------------------
+        function sortLeadsForReport(leadsList) {
+            const stagePriority = {
+                "Won": 1,
+                "Lost": 2, // "Not Interested"
+                "Negotiation": 3,
+                "Demo Scheduled": 4,
+                "Contacted": 5,
+                "New": 6
+            };
+            return [...leadsList].sort((a, b) => {
+                const pA = stagePriority[a.status] || 99;
+                const pB = stagePriority[b.status] || 99;
+                if (pA !== pB) return pA - pB;
+                return (b.meeting_date || "").localeCompare(a.meeting_date || "");
+            });
+        }
+
+        let currentReportType = 'monthly';
+        function selectReportType(type) {
+            currentReportType = type;
+            const btnMonthly = document.getElementById("rep-type-monthly");
+            const btnQuarterly = document.getElementById("rep-type-quarterly");
+            const btnCustom = document.getElementById("rep-type-custom");
+            const monthCont = document.getElementById("rep-param-month-container");
+            const qCont = document.getElementById("rep-param-quarter-container");
+            const custCont = document.getElementById("rep-param-custom-container");
+
+            const activeClass = "py-2.5 px-3 rounded-lg font-bold border-2 border-blue-600 bg-blue-50 text-blue-800 text-center transition cursor-pointer";
+            const inactiveClass = "py-2.5 px-3 rounded-lg font-bold border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-center transition cursor-pointer";
+
+            if (btnMonthly) btnMonthly.className = type === 'monthly' ? activeClass : inactiveClass;
+            if (btnQuarterly) btnQuarterly.className = type === 'quarterly' ? activeClass : inactiveClass;
+            if (btnCustom) btnCustom.className = type === 'custom' ? activeClass : inactiveClass;
+
+            if (type === 'monthly') {
+                if (monthCont) monthCont.classList.remove("hidden");
+                if (qCont) qCont.classList.add("hidden");
+                if (custCont) custCont.classList.add("hidden");
+            } else if (type === 'quarterly') {
+                if (monthCont) monthCont.classList.add("hidden");
+                if (qCont) qCont.classList.remove("hidden");
+                if (custCont) custCont.classList.add("hidden");
+            } else {
+                if (monthCont) monthCont.classList.add("hidden");
+                if (qCont) qCont.classList.add("hidden");
+                if (custCont) custCont.classList.remove("hidden");
+            }
+        }
+
+        function openDownloadReportsModal() {
+            const modal = document.getElementById("download-reports-modal");
+            if (modal) {
+                const curYear = document.getElementById("admin-year-filter") ? document.getElementById("admin-year-filter").value : "2026";
+                const curQ = document.getElementById("admin-quarter-filter") ? document.getElementById("admin-quarter-filter").value : "Q4";
+                const curM = document.getElementById("admin-month-filter") ? document.getElementById("admin-month-filter").value : "11";
+
+                const yearEl = document.getElementById("rep-param-year");
+                const monthEl = document.getElementById("rep-param-month");
+                const qEl = document.getElementById("rep-param-quarter");
+
+                if (yearEl) yearEl.value = curYear;
+                if (monthEl && curM !== "All Months") monthEl.value = curM;
+                if (qEl && curQ !== "All Quarters") qEl.value = curQ;
+
+                modal.classList.remove("hidden");
+                document.body.classList.add("overflow-hidden");
+            }
+        }
+
+        function closeDownloadReportsModal() {
+            const modal = document.getElementById("download-reports-modal");
+            if (modal) {
+                modal.classList.add("hidden");
+                document.body.classList.remove("overflow-hidden");
+            }
+        }
+
+        function getReportDataset() {
+            const leads = getLeads();
+            const year = document.getElementById("rep-param-year") ? document.getElementById("rep-param-year").value : "2026";
+            let filtered = leads;
+            let reportTitle = "";
+            let metadata = "";
+
+            if (currentReportType === 'monthly') {
+                const month = document.getElementById("rep-param-month") ? document.getElementById("rep-param-month").value : "11";
+                const monthNames = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const monthName = month === "All Months" ? "All Months" : (monthNames[parseInt(month)] || month);
+                
+                reportTitle = `Monthly Sales Performance Report - ${monthName} ${year !== 'All Years' ? year : ''}`;
+                metadata = `Monthly Period: ${monthName} &bull; Year: ${year}`;
+
+                if (year !== "All Years") {
+                    filtered = filtered.filter(l => (l.meeting_date || "").startsWith(year));
+                }
+                if (month !== "All Months") {
+                    const mStr = month.padStart(2, "0");
+                    filtered = filtered.filter(l => (l.meeting_date || "").includes("-" + mStr + "-"));
+                }
+            } else if (currentReportType === 'quarterly') {
+                const q = document.getElementById("rep-param-quarter") ? document.getElementById("rep-param-quarter").value : "Q4";
+                const qMap = {
+                    "Q1": { name: "Q1 (Jan - Mar)", months: ["-01-", "-02-", "-03-"] },
+                    "Q2": { name: "Q2 (Apr - Jun)", months: ["-04-", "-05-", "-06-"] },
+                    "Q3": { name: "Q3 (Jul - Sep)", months: ["-07-", "-08-", "-09-"] },
+                    "Q4": { name: "Q4 (Oct - Dec)", months: ["-10-", "-11-", "-12-"] },
+                    "All Quarters": { name: "All 4 Quarters", months: [] }
+                };
+                const qInfo = qMap[q] || { name: q, months: [] };
+                reportTitle = `Quarterly Sales Performance Report - ${qInfo.name} ${year !== 'All Years' ? year : ''}`;
+                metadata = `Quarterly Period: ${qInfo.name} &bull; Year: ${year}`;
+
+                if (year !== "All Years") {
+                    filtered = filtered.filter(l => (l.meeting_date || "").startsWith(year));
+                }
+                if (q !== "All Quarters" && qInfo.months.length > 0) {
+                    filtered = filtered.filter(l => qInfo.months.some(m => (l.meeting_date || "").includes(m)));
+                }
+            } else {
+                const curYear = document.getElementById("admin-year-filter") ? document.getElementById("admin-year-filter").value : "All Years";
+                const curQ = document.getElementById("admin-quarter-filter") ? document.getElementById("admin-quarter-filter").value : "All Quarters";
+                const curM = document.getElementById("admin-month-filter") ? document.getElementById("admin-month-filter").value : "All Months";
+
+                reportTitle = `Enterprise Performance Report - Custom Filter`;
+                metadata = `Year: ${curYear} &bull; Quarter: ${curQ} &bull; Month: ${curM}`;
+
+                if (curYear !== "All Years") {
+                    filtered = filtered.filter(l => (l.meeting_date || "").startsWith(curYear));
+                }
+                if (curQ !== "All Quarters") {
+                    const qMap = {
+                        "Q1": ["-01-", "-02-", "-03-"],
+                        "Q2": ["-04-", "-05-", "-06-"],
+                        "Q3": ["-07-", "-08-", "-09-"],
+                        "Q4": ["-10-", "-11-", "-12-"]
+                    };
+                    const allowedMonths = qMap[curQ] || [];
+                    filtered = filtered.filter(l => allowedMonths.some(m => (l.meeting_date || "").includes(m)));
+                }
+                if (curM !== "All Months") {
+                    const mStr = curM.padStart(2, "0");
+                    filtered = filtered.filter(l => (l.meeting_date || "").includes("-" + mStr + "-"));
+                }
+            }
+
+            return { title: reportTitle, leads: filtered, metadata: metadata };
+        }
+
+        function executeReportDownload(format) {
+            const data = getReportDataset();
+            if (format === 'excel') {
+                generateExcelReport(data.title, data.leads, data.metadata);
+            } else {
+                generatePdfReport(data.title, data.leads, data.metadata);
+            }
+            closeDownloadReportsModal();
+        }
+
+        function downloadQuarterlyReport(format) {
+            const leads = getLeads();
+            const yearVal = document.getElementById("admin-year-filter") ? document.getElementById("admin-year-filter").value : "2026";
+            const qVal = document.getElementById("admin-quarter-filter") ? document.getElementById("admin-quarter-filter").value : "All Quarters";
+
+            let filtered = leads;
+            if (yearVal !== "All Years") {
+                filtered = filtered.filter(l => (l.meeting_date || "").startsWith(yearVal));
+            }
+            if (qVal !== "All Quarters") {
+                const qMap = {
+                    "Q1": ["-01-", "-02-", "-03-"],
+                    "Q2": ["-04-", "-05-", "-06-"],
+                    "Q3": ["-07-", "-08-", "-09-"],
+                    "Q4": ["-10-", "-11-", "-12-"]
+                };
+                const allowed = qMap[qVal] || [];
+                filtered = filtered.filter(l => allowed.some(m => (l.meeting_date || "").includes(m)));
+            }
+
+            const title = `Quarterly Sales Performance Report - ${qVal} (${yearVal})`;
+            const metadata = `Fiscal Calendar: Jan - Dec &bull; Scope: ${qVal} &bull; Year: ${yearVal}`;
+
+            if (format === 'excel') {
+                generateExcelReport(title, filtered, metadata);
+            } else {
+                generatePdfReport(title, filtered, metadata);
+            }
+        }
+
+        function generateExcelReport(title, leadsList, metadata) {
+            const sorted = sortLeadsForReport(leadsList);
+            
+            const escapeCsv = (str) => {
+                if (str === null || str === undefined) return '""';
+                const s = String(str).replace(/"/g, '""');
+                return `"${s}"`;
+            };
+
+            const headers = [
+                "S.No",
+                "Lead Number",
+                "Stage / Status",
+                "Price on Win (INR)",
+                "Company Name",
+                "Person to Meet",
+                "Designation",
+                "Phone Number",
+                "Email Address",
+                "Meeting Date",
+                "Meeting Time",
+                "Product of Interest",
+                "Assigned Sales Consultant",
+                "Generated By (RM)",
+                "Company / Meeting Address",
+                "Requirement Notes / Remarks"
+            ];
+
+            let csvContent = "\uFEFF"; // UTF-8 BOM for Microsoft Excel
+            csvContent += `VP INFO SOLUTIONS PVT LTD - TALLY CERTIFIED PARTNER\r\n`;
+            csvContent += `${escapeCsv(title)}\r\n`;
+            csvContent += `Generated On: ${new Date().toLocaleString("en-IN")}, Total Leads: ${sorted.length}\r\n`;
+            if (metadata) csvContent += `${escapeCsv(metadata.replace(/&bull;/g, "•"))}\r\n`;
+            csvContent += `Sorting Rule: Won First -> Not Interested -> Followed by Active Pipeline\r\n\r\n`;
+
+            // KPI Summary Row
+            const wonCount = sorted.filter(l => l.status === "Won").length;
+            const lostCount = sorted.filter(l => l.status === "Lost").length;
+            const wonRev = sorted.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+            const winRate = sorted.length > 0 ? (wonCount / sorted.length * 100).toFixed(1) : "0.0";
+            csvContent += `SUMMARY: Total Won Deals: ${wonCount}, Not Interested: ${lostCount}, Win Rate: ${winRate}%, Total Realized Revenue: INR ${wonRev}\r\n\r\n`;
+
+            csvContent += headers.map(escapeCsv).join(",") + "\r\n";
+
+            sorted.forEach((l, idx) => {
+                const row = [
+                    idx + 1,
+                    l.lead_number || "N/A",
+                    l.status === "Lost" ? "Not Interested" : (l.status || "N/A"),
+                    l.status === "Won" ? (Number(l.estimated_value) || 0) : 0,
+                    l.business_name || "N/A",
+                    l.lead_name || "N/A",
+                    l.designation || "N/A",
+                    l.phone || "N/A",
+                    l.email || "N/A",
+                    l.meeting_date || "N/A",
+                    l.meeting_time || "N/A",
+                    l.interested_product || "N/A",
+                    l.sales_person_name || "Unassigned",
+                    l.created_by_name || "Direct",
+                    l.address || "N/A",
+                    l.notes || ""
+                ];
+                csvContent += row.map(escapeCsv).join(",") + "\r\n";
+            });
+
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const filename = `${title.replace(/[^a-zA-Z0-9_-]/g, "_")}.csv`;
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function generatePdfReport(title, leadsList, metadata) {
+            const sorted = sortLeadsForReport(leadsList);
+            const wonCount = sorted.filter(l => l.status === "Won").length;
+            const lostCount = sorted.filter(l => l.status === "Lost").length;
+            const openCount = sorted.length - wonCount - lostCount;
+            const wonRev = sorted.filter(l => l.status === "Won").reduce((s, l) => s + (Number(l.estimated_value) || 0), 0);
+            const winRate = sorted.length > 0 ? (wonCount / sorted.length * 100).toFixed(1) : "0.0";
+
+            const printWin = window.open("", "_blank");
+            if (!printWin) {
+                alert("Please allow popups to view and print the PDF report.");
+                return;
+            }
+
+            let rowsHtml = "";
+            if (sorted.length === 0) {
+                rowsHtml = `<tr><td colspan="9" style="text-align:center; padding: 24px; color: #64748b; font-size: 13px;">No leads found for this period.</td></tr>`;
+            } else {
+                sorted.forEach((l, idx) => {
+                    const isWon = l.status === "Won";
+                    const isLost = l.status === "Lost";
+                    const rowBg = isWon ? "#ecfdf5" : isLost ? "#fef2f2" : (idx % 2 === 0 ? "#ffffff" : "#f8fafc");
+                    const statusColor = isWon ? "#065f46" : isLost ? "#991b1b" : "#1e40af";
+                    const statusLabel = isWon ? "🏆 Won" : isLost ? "❌ Not Interested" : (l.status || "N/A");
+                    const wonVal = isWon ? `₹${(Number(l.estimated_value) || 0).toLocaleString("en-IN")}` : "—";
+
+                    rowsHtml += `
+                        <tr style="background-color: ${rowBg}; border-bottom: 1px solid #e2e8f0; font-size: 11px;">
+                            <td style="padding: 7px; font-weight: bold; text-align: center;">${idx + 1}</td>
+                            <td style="padding: 7px; font-family: monospace; font-weight: bold;">${l.lead_number || "N/A"}</td>
+                            <td style="padding: 7px; font-weight: bold; color: ${statusColor};">${statusLabel}</td>
+                            <td style="padding: 7px; font-weight: bold; text-align: right; color: ${isWon ? '#065f46' : '#64748b'};">${wonVal}</td>
+                            <td style="padding: 7px; font-weight: bold; color: #0f172a;">${l.business_name || "N/A"}</td>
+                            <td style="padding: 7px;">${l.lead_name || "N/A"}<div style="color: #64748b; font-size: 10px;">${l.phone || ""}</div></td>
+                            <td style="padding: 7px; color: #b45309; font-weight: 600;">${l.interested_product || "N/A"}</td>
+                            <td style="padding: 7px; color: #334155;">${l.sales_person_name || "Unassigned"}</td>
+                            <td style="padding: 7px; color: #475569; font-size: 10px;">${l.created_by_name || "Direct"}<div style="color: #64748b; font-style: italic;">${l.address ? l.address.substring(0, 35) + '...' : ''}</div></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>${title} - VP Info Solutions</title>
+                    <style>
+                        @page { size: A4 landscape; margin: 10mm; }
+                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 16px; font-size: 12px; }
+                        .header { border-bottom: 3px solid #f59e0b; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-start; }
+                        .title { font-size: 18px; font-weight: 900; color: #0a192f; margin: 0; }
+                        .sub { color: #64748b; font-size: 11px; margin-top: 3px; }
+                        .kpi-container { display: flex; gap: 8px; margin-bottom: 12px; }
+                        .kpi-card { flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; background: #f8fafc; }
+                        .kpi-title { font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: bold; }
+                        .kpi-val { font-size: 16px; font-weight: 900; margin-top: 2px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+                        th { background: #0a192f; color: #ffffff; text-align: left; padding: 7px; font-size: 10px; text-transform: uppercase; }
+                        .footer { margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 6px; font-size: 9px; color: #64748b; display: flex; justify-content: space-between; }
+                        .no-print { margin-bottom: 14px; }
+                        .btn { padding: 8px 16px; background: #0284c7; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; }
+                        @media print { .no-print { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="no-print" style="display: flex; gap: 10px; align-items: center;">
+                        <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+                        <span style="font-size: 11px; color: #64748b;">(Choose "Save as PDF" destination in your browser print prompt)</span>
+                    </div>
+
+                    <div class="header">
+                        <div>
+                            <h1 class="title">VP INFO SOLUTIONS PVT LTD</h1>
+                            <div style="font-weight: bold; color: #d97706; font-size: 11px;">★ TALLY CERTIFIED PARTNER &bull; ENTERPRISE SALES DOSSIER ★</div>
+                            <div class="sub"><strong>Report:</strong> ${title} ${metadata ? ' &bull; ' + metadata : ''}</div>
+                        </div>
+                        <div style="text-align: right; font-size: 10px; color: #64748b;">
+                            <div><strong>Generated:</strong> ${new Date().toLocaleString("en-IN")}</div>
+                            <div><strong>Rule:</strong> 🏆 Won First ➔ ❌ Not Interested ➔ Pipeline</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="kpi-card" style="border-top: 3px solid #3b82f6;">
+                            <div class="kpi-title">Total Leads</div>
+                            <div class="kpi-val" style="color: #1e3a8a;">${sorted.length}</div>
+                        </div>
+                        <div class="kpi-card" style="border-top: 3px solid #10b981; background: #ecfdf5;">
+                            <div class="kpi-title" style="color: #065f46;">Closed Won</div>
+                            <div class="kpi-val" style="color: #065f46;">${wonCount}</div>
+                        </div>
+                        <div class="kpi-card" style="border-top: 3px solid #ef4444; background: #fef2f2;">
+                            <div class="kpi-title" style="color: #991b1b;">Not Interested</div>
+                            <div class="kpi-val" style="color: #991b1b;">${lostCount}</div>
+                        </div>
+                        <div class="kpi-card" style="border-top: 3px solid #f59e0b;">
+                            <div class="kpi-title">Active Pipeline</div>
+                            <div class="kpi-val" style="color: #b45309;">${openCount}</div>
+                        </div>
+                        <div class="kpi-card" style="border-top: 3px solid #6366f1;">
+                            <div class="kpi-title">Win Rate</div>
+                            <div class="kpi-val" style="color: #4338ca;">${winRate}%</div>
+                        </div>
+                        <div class="kpi-card" style="border-top: 3px solid #8b5cf6;">
+                            <div class="kpi-title">Won Revenue</div>
+                            <div class="kpi-val" style="color: #6b21a8;">₹${wonRev.toLocaleString("en-IN")}</div>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 25px; text-align: center;">#</th>
+                                <th style="width: 75px;">Lead #</th>
+                                <th style="width: 95px;">Stage</th>
+                                <th style="width: 85px; text-align: right;">Price (₹)</th>
+                                <th>Company Name</th>
+                                <th>Person & Contact</th>
+                                <th>Product</th>
+                                <th>Consultant</th>
+                                <th>RM & Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+
+                    <div class="footer">
+                        <div>VP Info Solutions Pvt Ltd &bull; Confidential &bull; Official Management Report</div>
+                        <div>Page 1 of 1</div>
+                    </div>
+                    <script>
+                        setTimeout(() => { window.print(); }, 400);
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            printWin.document.open();
+            printWin.document.write(html);
+            printWin.document.close();
+        }
+
+        async function resetAllLeadsDatabase() {
+            if (confirm("Are you sure you want to permanently clear all leads? This will reset the leads database across all devices.")) {
+                saveLeads([]);
+                await pushToCloud([]);
+                alert("All leads have been successfully cleared across all devices!");
+                renderAdminDashboard();
             }
         }
 

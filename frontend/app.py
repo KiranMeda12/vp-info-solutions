@@ -717,6 +717,27 @@ def render_admin_dashboard():
         st.markdown("#### 📈 Quarterly Comparative Matrix")
         st.dataframe(pd.DataFrame(matrix_rows), use_container_width=True)
 
+        st.markdown("---")
+        st.markdown("#### 📥 Download Enterprise Reports (Excel / CSV)")
+        st.caption("📌 **Rule Applied:** Leads in reports are sorted with **Won** first, followed by **Not Interested**, then remaining pipeline stages.")
+
+        def sort_leads_for_export(leads):
+            prio = {"Won": 1, "Lost": 2, "Negotiation": 3, "Demo Scheduled": 4, "Contacted": 5, "New": 6}
+            return sorted(leads, key=lambda l: (prio.get(l.get("status"), 99), l.get("meeting_date") or ""))
+
+        if all_leads:
+            sorted_leads = sort_leads_for_export(all_leads)
+            df_exp = pd.DataFrame(sorted_leads)
+            if "status" in df_exp.columns:
+                df_exp["status_label"] = df_exp["status"].apply(lambda s: "Not Interested" if s == "Lost" else s)
+            csv_data = df_exp.to_csv(index=False).encode("utf-8-sig")
+            st.download_button(
+                label="📗 Download Report in Excel (.csv) — Won First, Then Not Interested",
+                data=csv_data,
+                file_name=f"VP_Info_Report_{year_sel}_{quarter_sel}_{month_sel}.csv",
+                mime="text/csv"
+            )
+
     # --- TAB 4: RM LEADS PENDING ASSIGNMENT ---
     with tab_assign:
         st.markdown("### 📥 RM Raised Leads — Pending Admin Assignment")
